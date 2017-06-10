@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan(basePackages={"com.knowshare.enterprise.bean"})
+@ComponentScan(basePackages={"com.knowshare"})
 public class Main {
 	
 	public static void main(String[] args) {
