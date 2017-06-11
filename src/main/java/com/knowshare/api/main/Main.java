@@ -3,9 +3,11 @@ package com.knowshare.api.main;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @SpringBootApplication
-@ComponentScan(basePackages={"com.knowshare.enterprise","com.knowshare.api"})
+@EnableMongoRepositories(basePackages={"com.knowshare.enterprise.repository"})
+@ComponentScan(basePackages={"com.knowshare.enterprise.bean","com.knowshare.api.controller"})
 public class Main {
 	
 	public static void main(String[] args) {

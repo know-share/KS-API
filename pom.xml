@@ -42,6 +42,11 @@
 			<artifactId>KS-Personalization</artifactId>
 			<version>${knowshare.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.knowshare.data</groupId>
+        	<artifactId>KS-Data</artifactId>
+        	<version>${knowshare.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
