@@ -15,8 +15,7 @@ public class Controller {
 	
 	@RequestMapping(value="/hello", method=RequestMethod.GET)
 	public String sum(){
-		habilidadBean.createHabilidad("habilidad2");
-		return "";
+		return "Hello";
 	}
 }
 
