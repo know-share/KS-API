@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.knowshare.api.controller.academia;
+package com.knowshare.api.controller.perfilusuario;
 
 import java.util.List;
 
@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knowshare.dto.academia.CarreraDTO;
-import com.knowshare.enterprise.bean.carrera.CarreraFacade;
+import com.knowshare.enterprise.bean.personalidad.PersonalidadFacade;
+import com.knowshare.entities.perfilusuario.Personalidad;
 
 /**
  * @author miguel
@@ -22,16 +22,19 @@ import com.knowshare.enterprise.bean.carrera.CarreraFacade;
  */
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/carrera")
-public class CarreraController{
+@RequestMapping("/personalidad")
+public class PersonalidadController{
 	
 	@Autowired
-	private CarreraFacade carreraBean;
+	private PersonalidadFacade personalidadBean;
 	
 	@RequestMapping(value="/findAll", method=RequestMethod.GET)
-	public ResponseEntity<List<CarreraDTO>> getAllCarreras(){
+	public ResponseEntity<List<Personalidad>> getAllPersonalidades(){
+		List<Personalidad> personalidades = personalidadBean.getAllPersonalidades();
+		if(personalidades.isEmpty())
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(carreraBean.getAllCarreras());
+				.body(personalidades);
 	}
 
 }
