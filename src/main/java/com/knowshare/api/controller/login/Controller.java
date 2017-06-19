@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knowshare.enterprise.repository.carrera.CarreraRepository;
-import com.knowshare.enterprise.repository.habilidad.HabilidadRepository;
+import com.knowshare.enterprise.repository.academia.CarreraRepository;
+import com.knowshare.enterprise.repository.perfilusuario.HabilidadRepository;
 import com.knowshare.entities.academia.Carrera;
 import com.knowshare.entities.perfilusuario.Habilidad;
 import com.knowshare.enums.TipoHabilidadEnum;
