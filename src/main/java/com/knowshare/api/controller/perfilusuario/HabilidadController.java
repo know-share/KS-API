@@ -37,7 +37,22 @@ public class HabilidadController {
 		if(carrera == null)
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(null);
-		final List<HabilidadDTO> habilidades = habilidadBean.getHabilidades(carrera.toLowerCase());
+		final List<HabilidadDTO> habilidades = habilidadBean.getHabilidades(carrera);
+		if(habilidades.isEmpty())
+			return ResponseEntity.status(HttpStatus.NO_CONTENT)
+					.body(null);
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(habilidades);
+	}
+	
+	@RequestMapping(value="/getHabilidadesProfesionales", method=RequestMethod.GET)
+	public ResponseEntity<List<HabilidadDTO>> getHabilidadesProfesionales(
+			@RequestParam String carrera){
+		if(carrera == null)
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(null);
+		final List<HabilidadDTO> habilidades = habilidadBean
+				.getHabilidadesProfesionales(carrera);
 		if(habilidades.isEmpty())
 			return ResponseEntity.status(HttpStatus.NO_CONTENT)
 					.body(null);
