@@ -5,6 +5,8 @@ package com.knowshare.api.controller.perfilusuario;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +27,14 @@ import com.knowshare.entities.perfilusuario.Cualidad;
 @RequestMapping("/cualidad")
 public class CualidadController {
 	
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	private CualidadFacade cualidadBean;
 	
 	@RequestMapping(value="/findAll", method=RequestMethod.GET)
 	public ResponseEntity<List<Cualidad>> findAll(){
+		logger.debug(":::: Start method findAll() in CualidadController ::::");
 		List<Cualidad> cualidades = cualidadBean.getAll();
 		if(cualidades.isEmpty())
 			return ResponseEntity.status(HttpStatus.NO_CONTENT)
