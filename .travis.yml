@@ -2,7 +2,7 @@ language: java
 jdk:
   - oraclejdk8
 maven: 
-  version: 3.3.9
+  version: 3.2
 before_install:
   - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Data.git
   - cd KS-Data && mvn install && cd ..
