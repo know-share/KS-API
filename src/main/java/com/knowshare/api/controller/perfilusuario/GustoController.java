@@ -28,10 +28,10 @@ public class GustoController {
 	@Autowired
 	private GustoFacade gustoBean;
 	
-	@RequestMapping(value="/findAll", method=RequestMethod.GET)
+	@RequestMapping(value="/findAll", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<List<Gusto>> findAll(){
 		List<Gusto> gustos = gustoBean.getAllGustos();
-		if(gustos.isEmpty())
+		if(gustos == null || gustos.isEmpty())
 			return ResponseEntity.status(HttpStatus.NO_CONTENT)
 					.body(null);
 		return ResponseEntity.status(HttpStatus.OK)

@@ -1,0 +1,15 @@
+language: java
+jdk:
+  - oraclejdk8
+maven: 
+  version: 3.3.9
+before_install:
+  - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Data.git
+  - cd KS-Data && mvn install && cd ..
+  - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Admin.git
+  - cd KS-Admin && mvn install -DskipTests && cd ..
+  - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Personalization.git
+  - cd KS-Personalization && mvn install -DskipTests && cd ..
+  - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Enterprise.git
+  - cd KS-Enterprise && mvn install -DskipTests && cd ..
+script: cd $TRAVIS_BUILD_DIR/ && mvn test -B

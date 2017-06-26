@@ -38,14 +38,14 @@ public class UsuarioController {
 	@RequestMapping(value = "isUsernameTaken", method = RequestMethod.GET)
 	public ResponseEntity<Boolean> isUsernameTaken(@RequestParam String username) {
 		logger.debug(":::: Start method isUsernameTaken(String) in UsuarioController ::::");
-		if (username == null) {
+		if (username == null || username.isEmpty()) {
 			logger.error(":::: Error parameter username is not in the request ::::");
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioBean.isUsernameTaken(username));
 	}
 
-	@RequestMapping(value = "", method = RequestMethod.POST)
+	@RequestMapping(value = "", method = RequestMethod.POST, consumes="application/json")
 	public ResponseEntity<?> crearUsuario(@RequestBody UsuarioDTO dto) {
 		logger.debug(":::: Start method crearUsuario(UsuarioDTO) in UsuarioController ::::");
 		if (dto == null) {
@@ -54,9 +54,15 @@ public class UsuarioController {
 		}
 		if (usuarioBean.crearUsuario(dto))
 			return ResponseEntity.status(HttpStatus.CREATED).body(null);
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		return ResponseEntity.status(HttpStatus.OK).body(false);
 	}
 	
+	/**
+	 * This method is not available for testing and production
+	 * @param usernameSol
+	 * @param usernameObj
+	 * @return
+	 */
 	@RequestMapping(value = "/seguir/{usernameSol}/{usernameObj}", method = RequestMethod.GET)
 	public ResponseEntity<?> seguir(@PathVariable String usernameSol,@PathVariable String usernameObj){
 		if(usuarioBean.isUsernameTaken(usernameSol) && usuarioBean.isUsernameTaken(usernameObj)){

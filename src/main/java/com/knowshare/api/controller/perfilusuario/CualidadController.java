@@ -32,11 +32,11 @@ public class CualidadController {
 	@Autowired
 	private CualidadFacade cualidadBean;
 	
-	@RequestMapping(value="/findAll", method=RequestMethod.GET)
+	@RequestMapping(value="/findAll", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<List<Cualidad>> findAll(){
 		logger.debug(":::: Start method findAll() in CualidadController ::::");
 		List<Cualidad> cualidades = cualidadBean.getAll();
-		if(cualidades.isEmpty())
+		if(cualidades == null || cualidades.isEmpty())
 			return ResponseEntity.status(HttpStatus.NO_CONTENT)
 					.body(null);
 		return ResponseEntity.status(HttpStatus.OK)

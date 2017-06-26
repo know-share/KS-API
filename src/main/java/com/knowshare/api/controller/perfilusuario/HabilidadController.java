@@ -38,7 +38,7 @@ public class HabilidadController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(null);
 		final List<HabilidadDTO> habilidades = habilidadBean.getHabilidades(carrera);
-		if(habilidades.isEmpty())
+		if(habilidades == null || habilidades.isEmpty())
 			return ResponseEntity.status(HttpStatus.NO_CONTENT)
 					.body(null);
 		return ResponseEntity.status(HttpStatus.OK)
@@ -53,7 +53,7 @@ public class HabilidadController {
 					.body(null);
 		final List<HabilidadDTO> habilidades = habilidadBean
 				.getHabilidadesProfesionales(carrera);
-		if(habilidades.isEmpty())
+		if(habilidades == null || habilidades.isEmpty())
 			return ResponseEntity.status(HttpStatus.NO_CONTENT)
 					.body(null);
 		return ResponseEntity.status(HttpStatus.OK)
@@ -62,6 +62,7 @@ public class HabilidadController {
 	
 	/**
 	 * Example of pagination
+	 * this method is not complete, therefore is not tested
 	 * @return
 	 */
 	@RequestMapping(value="/findAll", method=RequestMethod.GET)

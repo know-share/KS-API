@@ -31,7 +31,7 @@ public class PersonalidadController{
 	@RequestMapping(value="/findAll", method=RequestMethod.GET)
 	public ResponseEntity<List<Personalidad>> getAllPersonalidades(){
 		List<Personalidad> personalidades = personalidadBean.getAllPersonalidades();
-		if(personalidades.isEmpty())
+		if(personalidades == null || personalidades.isEmpty())
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(personalidades);
