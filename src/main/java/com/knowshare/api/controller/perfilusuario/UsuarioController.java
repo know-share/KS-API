@@ -72,6 +72,17 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); 
 	}
 	
+	@RequestMapping(value = "/solicitud/{usernameSol}/{usernameObj}", method = RequestMethod.GET)
+	public ResponseEntity<?> solicitudAmistad(@PathVariable String usernameSol,@PathVariable String usernameObj){
+		if(usuarioBean.isUsernameTaken(usernameSol) && usuarioBean.isUsernameTaken(usernameObj)){
+			if(usuarioBean.solicitudAmistad(usernameSol, usernameObj)){
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			}else
+				return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); 
+	}
+	
 	@RequestMapping(value="/get/{username}", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<UsuarioDTO> getUsuario(@PathVariable String username){
 		if (username == null)
