@@ -21,8 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import com.knowshare.dto.perfilusuario.CualidadDTO;
 import com.knowshare.enterprise.bean.cualidad.CualidadFacade;
-import com.knowshare.entities.perfilusuario.Cualidad;
 import com.knowshare.enums.TipoCualidadEnum;
 import com.knowshare.test.api.general.AbstractApiTest;
 
@@ -35,22 +35,22 @@ public class CualidadControllerTest extends AbstractApiTest{
 	@MockBean
 	private CualidadFacade cualidadBean;
 	
-	private List<Cualidad> cualidades;
+	private List<CualidadDTO> cualidades;
 	
 	private static final String FIND_ALL = "/cualidad/findAll";
 	
 	@Before
 	public void setup(){
 		cualidades = Arrays.asList(
-					new Cualidad()
+					new CualidadDTO()
 						.setId(new ObjectId(new Date()))
 						.setNombre("Cualidad 1")
 						.setTipo(TipoCualidadEnum.PROFESIONAL),
-					new Cualidad()
+					new CualidadDTO()
 						.setId(new ObjectId(new Date()))
 						.setNombre("Cualidad 2")
 						.setTipo(TipoCualidadEnum.PROFESOR),
-					new Cualidad()
+					new CualidadDTO()
 						.setId(new ObjectId(new Date()))
 						.setNombre("Cualidad 3")
 						.setTipo(TipoCualidadEnum.DIRECTOR)

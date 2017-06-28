@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.knowshare.dto.perfilusuario.CualidadDTO;
 import com.knowshare.enterprise.bean.cualidad.CualidadFacade;
-import com.knowshare.entities.perfilusuario.Cualidad;
 
 /**
  * @author miguel
@@ -33,9 +33,9 @@ public class CualidadController {
 	private CualidadFacade cualidadBean;
 	
 	@RequestMapping(value="/findAll", method=RequestMethod.GET, produces="application/json")
-	public ResponseEntity<List<Cualidad>> findAll(){
+	public ResponseEntity<List<CualidadDTO>> findAll(){
 		logger.debug(":::: Start method findAll() in CualidadController ::::");
-		List<Cualidad> cualidades = cualidadBean.getAll();
+		List<CualidadDTO> cualidades = cualidadBean.getAll();
 		if(cualidades == null || cualidades.isEmpty())
 			return ResponseEntity.status(HttpStatus.NO_CONTENT)
 					.body(null);

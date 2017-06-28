@@ -3,8 +3,6 @@
  */
 package com.knowshare.api.controller.perfilusuario;
 
-
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,5 +70,15 @@ public class UsuarioController {
 				return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); 
+	}
+	
+	@RequestMapping(value="/get/{username}", method=RequestMethod.GET, produces="application/json")
+	public ResponseEntity<UsuarioDTO> getUsuario(@PathVariable String username){
+		if (username == null)
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		UsuarioDTO usuario = usuarioBean.getUsuario(username);
+		if(usuario == null)
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		return ResponseEntity.ok(usuario);
 	}
 }
