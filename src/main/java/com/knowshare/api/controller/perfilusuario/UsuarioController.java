@@ -83,7 +83,7 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); 
 	}
 	
-	@RequestMapping(value="/get/{username}", method=RequestMethod.GET, produces="application/json")
+	@RequestMapping(value="/get/{username:.+}", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<UsuarioDTO> getUsuario(@PathVariable String username){
 		if (username == null)
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
