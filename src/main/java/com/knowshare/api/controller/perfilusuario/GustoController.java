@@ -22,7 +22,7 @@ import com.knowshare.entities.perfilusuario.Gusto;
  */
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/gusto")
+@RequestMapping("/api/gusto")
 public class GustoController {
 	
 	@Autowired

@@ -25,7 +25,7 @@ import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
  */
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/usuario")
+@RequestMapping("/api/usuario")
 public class UsuarioController {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());

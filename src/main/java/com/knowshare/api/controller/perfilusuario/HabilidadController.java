@@ -25,7 +25,7 @@ import com.knowshare.entities.perfilusuario.Habilidad;
  */
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/habilidad")
+@RequestMapping("/api/habilidad")
 public class HabilidadController {
 	
 	@Autowired

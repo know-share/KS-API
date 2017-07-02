@@ -28,6 +28,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt -->
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>4.36</version>
+		</dependency>
 		<dependency>
 			<groupId>com.knowshare.enterprise</groupId>
 			<artifactId>KS-Enterprise</artifactId>
@@ -45,8 +51,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.knowshare.data</groupId>
-        	<artifactId>KS-Data</artifactId>
-        	<version>${knowshare.version}</version>
+			<artifactId>KS-Data</artifactId>
+			<version>${knowshare.version}</version>
 		</dependency>
 	</dependencies>
 

@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.knowshare.api.security.JWTFilter;
 import com.knowshare.dto.perfilusuario.AuthDTO;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
+import com.knowshare.enterprise.repository.app.UserSessionRepository;
+import com.knowshare.entities.app.UserSession;
 
 /**
  * @author miguel
@@ -24,21 +27,26 @@ import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 	
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
 	private UsuarioFacade usuarioBean;
-
-	@RequestMapping(value="/login", method=RequestMethod.PUT)
-	public ResponseEntity<?> login(@RequestBody AuthDTO dto){
-		logger.debug(":::: Start method logn() in authController ::::");
+	
+	@Autowired
+	private UserSessionRepository userSessionRepository;
+	
+	@RequestMapping(value="/login", method=RequestMethod.POST)
+	public ResponseEntity<?> login(@RequestBody AuthDTO dto) throws Exception{
+		logger.debug(":::: Start method login() in authController ::::");
 		if(dto != null){
 			if(dto.getUsername() != null || dto.getPassword()!=null){
 				if(usuarioBean.login(dto.getUsername(), dto.getPassword())){
-					return ResponseEntity.status(HttpStatus.OK).body(null);
+					UserSession us = JWTFilter.generateToken(dto);
+					userSessionRepository.insert(us);
+					return ResponseEntity.status(HttpStatus.OK).body(us.getToken());
 				}
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 			}

@@ -24,7 +24,7 @@ import com.knowshare.enterprise.bean.cualidad.CualidadFacade;
  */
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/cualidad")
+@RequestMapping("/api/cualidad")
 public class CualidadController {
 	
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());

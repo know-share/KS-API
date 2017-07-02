@@ -24,7 +24,7 @@ import com.knowshare.enterprise.bean.carrera.CarreraFacade;
  */
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/carrera")
+@RequestMapping("/api/carrera")
 public class CarreraController{
 	
 	@Autowired
