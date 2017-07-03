@@ -3,6 +3,7 @@
  */
 package com.knowshare.api.security;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -15,10 +16,12 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import com.knowshare.dto.perfilusuario.AuthDTO;
 import com.knowshare.entities.app.UserSession;
 import com.nimbusds.jose.EncryptionMethod;
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.JWEAlgorithm;
 import com.nimbusds.jose.JWEEncrypter;
 import com.nimbusds.jose.JWEHeader;
 import com.nimbusds.jose.JWEObject;
+import com.nimbusds.jose.KeyLengthException;
 import com.nimbusds.jose.Payload;
 import com.nimbusds.jose.crypto.DirectDecrypter;
 import com.nimbusds.jose.crypto.DirectEncrypter;
@@ -68,13 +71,24 @@ public class JWTFilter {
 		return us;
 	}
 
-	public static boolean validateToken(String token,String secret) throws Exception {
+	public static boolean validateToken(String token,String secret){
 		// Parse into JWE object again...
 		SecretKey secretKey = convertSecretKey(secret);
-		JWEObject jweObject = JWEObject.parse(token);
+		JWEObject jweObject;
+		try {
+			jweObject = JWEObject.parse(token);
+		} catch (ParseException e1) {
+			return false;
+		}
 
 		// Decrypt
-		jweObject.decrypt(new DirectDecrypter(secretKey));
+		try {
+			jweObject.decrypt(new DirectDecrypter(secretKey));
+		} catch (KeyLengthException e) {
+			return false;
+		} catch (JOSEException e) {
+			return false;
+		}
 
 		// Get the plain text
 		Payload payload = jweObject.getPayload();
