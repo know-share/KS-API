@@ -29,12 +29,7 @@ public class PersonalidadController{
 	private PersonalidadFacade personalidadBean;
 	
 	@RequestMapping(value="/findAll", method=RequestMethod.GET)
-	public ResponseEntity<List<Personalidad>> getAllPersonalidades(){
-//		UserSession user = userSessionRepository.findByToken(token);
-//		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
-//			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
-//		}
-		
+	public ResponseEntity<List<Personalidad>> getAllPersonalidades(){	
 		List<Personalidad> personalidades = personalidadBean.getAllPersonalidades();
 		if(personalidades == null || personalidades.isEmpty())
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);

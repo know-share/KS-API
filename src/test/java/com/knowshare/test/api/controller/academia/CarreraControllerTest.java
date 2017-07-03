@@ -38,8 +38,8 @@ public class CarreraControllerTest extends AbstractApiTest{
 	
 	private EnfasisAreaConocimientoDTO enfasisAreaConocimiento;
 	
-	private final static String FIND_ALL = "/carrera/findAll";
-	private final static String GET_ENFASIS_AC = "/carrera/getEnfasisAreaConocimiento";
+	private final static String FIND_ALL = "/api/carrera/findAll";
+	private final static String GET_ENFASIS_AC = "/api/carrera/getEnfasisAreaConocimiento";
 	
 	@Before
 	public void setup(){

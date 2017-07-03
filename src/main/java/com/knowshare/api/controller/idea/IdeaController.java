@@ -44,12 +44,12 @@ public class IdeaController {
 	@RequestMapping(value="/crear/{username}" ,method = RequestMethod.POST)
 	public ResponseEntity<?> crearIdea(@PathVariable String username,
 			@RequestBody IdeaDTO idea,
-			@RequestHeader String token){
+			@RequestHeader("Authorization") String token){
 		UserSession sesion = userSessionRepository.findByToken(token);
-		
 		if(!JWTFilter.validateToken(token, sesion.getSecretKey())){
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		}
+		
 		if(!usuarioBean.isUsernameTaken(username)){
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		}

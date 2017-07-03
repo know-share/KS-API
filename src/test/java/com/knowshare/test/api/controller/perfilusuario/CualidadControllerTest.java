@@ -37,7 +37,7 @@ public class CualidadControllerTest extends AbstractApiTest{
 	
 	private List<CualidadDTO> cualidades;
 	
-	private static final String FIND_ALL = "/cualidad/findAll";
+	private static final String FIND_ALL = "/api/cualidad/findAll";
 	
 	@Before
 	public void setup(){

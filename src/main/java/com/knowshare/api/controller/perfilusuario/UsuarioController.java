@@ -11,13 +11,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.knowshare.api.security.JWTFilter;
 import com.knowshare.dto.perfilusuario.UsuarioDTO;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
+import com.knowshare.enterprise.repository.app.UserSessionRepository;
+import com.knowshare.entities.app.UserSession;
 
 /**
  * @author miguel
@@ -32,6 +36,9 @@ public class UsuarioController {
 
 	@Autowired
 	private UsuarioFacade usuarioBean;
+	
+	@Autowired
+	private UserSessionRepository userSessionRepository;
 
 	@RequestMapping(value = "isUsernameTaken", method = RequestMethod.GET)
 	public ResponseEntity<Boolean> isUsernameTaken(@RequestParam String username) {
@@ -62,7 +69,15 @@ public class UsuarioController {
 	 * @return
 	 */
 	@RequestMapping(value = "/seguir/{usernameSol}/{usernameObj}", method = RequestMethod.GET)
-	public ResponseEntity<?> seguir(@PathVariable String usernameSol,@PathVariable String usernameObj){
+	public ResponseEntity<?> seguir(
+			@RequestHeader("Authorization") String token,
+			@PathVariable String usernameSol,
+			@PathVariable String usernameObj){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
+		}
+		
 		if(usuarioBean.isUsernameTaken(usernameSol) && usuarioBean.isUsernameTaken(usernameObj)){
 			if(usuarioBean.seguir(usernameSol, usernameObj)){
 				return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -73,7 +88,15 @@ public class UsuarioController {
 	}
 	
 	@RequestMapping(value = "/solicitud/{usernameSol}/{usernameObj}", method = RequestMethod.GET)
-	public ResponseEntity<?> solicitudAmistad(@PathVariable String usernameSol,@PathVariable String usernameObj){
+	public ResponseEntity<?> solicitudAmistad(
+			@RequestHeader("Authorization") String token,
+			@PathVariable String usernameSol,
+			@PathVariable String usernameObj){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
+		}
+		
 		if(usuarioBean.isUsernameTaken(usernameSol) && usuarioBean.isUsernameTaken(usernameObj)){
 			if(usuarioBean.solicitudAmistad(usernameSol, usernameObj)){
 				return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -84,7 +107,15 @@ public class UsuarioController {
 	}
 	
 	@RequestMapping(value="/get/{username:.+}", method=RequestMethod.GET, produces="application/json")
-	public ResponseEntity<UsuarioDTO> getUsuario(@PathVariable String username){
+	public ResponseEntity<UsuarioDTO> getUsuario(
+			@RequestHeader("Authorization") String token,
+			@PathVariable String username){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
+		}
+		
+		
 		if (username == null)
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		UsuarioDTO usuario = usuarioBean.getUsuario(username);

@@ -38,8 +38,8 @@ public class HabilidadControllerTest extends AbstractApiTest{
 	
 	private List<HabilidadDTO> habilidades;
 	
-	private static final String FIND_HABILIDADES = "/habilidad/getHabilidades";
-	private static final String FIND_HAB_PROFESIONALES = "/habilidad/getHabilidadesProfesionales";
+	private static final String FIND_HABILIDADES = "/api/habilidad/getHabilidades";
+	private static final String FIND_HAB_PROFESIONALES = "/api/habilidad/getHabilidadesProfesionales";
 	
 	@Before
 	public void setup(){

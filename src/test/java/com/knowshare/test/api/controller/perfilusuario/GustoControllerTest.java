@@ -37,7 +37,7 @@ public class GustoControllerTest extends AbstractApiTest{
 	
 	private List<Gusto> gustos;
 	
-	private static final String FIND_ALL = "/gusto/findAll";
+	private static final String FIND_ALL = "/api/gusto/findAll";
 	
 	@Before
 	public void setup(){

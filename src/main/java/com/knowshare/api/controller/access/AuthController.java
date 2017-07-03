@@ -49,6 +49,9 @@ public class AuthController {
 			if(dto.getUsername() != null || dto.getPassword()!=null){
 				if(usuarioBean.login(dto.getUsername(), dto.getPassword())){
 					UserSession us = JWTFilter.generateToken(dto);
+					if(null == us)
+						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+								.body(null);
 					userSessionRepository.insert(us);
 					Map<String, String> map = new HashMap<>();
 					map.put("token", us.getToken());

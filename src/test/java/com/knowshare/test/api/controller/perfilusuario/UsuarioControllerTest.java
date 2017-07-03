@@ -21,9 +21,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import com.knowshare.api.security.JWTFilter;
 import com.knowshare.dto.academia.CarreraDTO;
+import com.knowshare.dto.perfilusuario.AuthDTO;
 import com.knowshare.dto.perfilusuario.UsuarioDTO;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
+import com.knowshare.enterprise.repository.app.UserSessionRepository;
+import com.knowshare.entities.app.UserSession;
 import com.knowshare.entities.perfilusuario.Personalidad;
 import com.knowshare.enums.PreferenciaIdeaEnum;
 import com.knowshare.enums.TipoUsuariosEnum;
@@ -38,11 +42,15 @@ public class UsuarioControllerTest extends AbstractApiTest{
 	@MockBean
 	private UsuarioFacade usuarioBean;
 	
-	private UsuarioDTO usuario;
+	@MockBean
+	private UserSessionRepository userSessionRepository;
 	
-	private static final String IS_USERNAME_TAKEN = "/usuario/isUsernameTaken";
-	private static final String CREATE_USER = "/usuario";
-	private static final String GET_USER = "/usuario/get";
+	private UsuarioDTO usuario;
+	private UserSession userSession;
+	
+	private static final String IS_USERNAME_TAKEN = "/api/usuario/isUsernameTaken";
+	private static final String CREATE_USER = "/api/usuario";
+	private static final String GET_USER = "/api/usuario/get";
 	
 	@Before
 	public void setup(){
@@ -63,7 +71,12 @@ public class UsuarioControllerTest extends AbstractApiTest{
 				.setSeguidores(new ArrayList<>())
 				.setTipoUsuario(TipoUsuariosEnum.ESTUDIANTE)
 				.setUsername("username user 1")
+				.setPassword("Password$")
 				.setPreferenciaIdea(PreferenciaIdeaEnum.POR_RELEVANCIA);
+		AuthDTO authDTO = new AuthDTO()
+				.setPassword("Password$")
+				.setUsername("username user 1");
+		userSession = JWTFilter.generateToken(authDTO);
 	}
 	
 	@Test
@@ -110,14 +123,24 @@ public class UsuarioControllerTest extends AbstractApiTest{
 		mockMvc.perform(get(GET_USER))
 			.andExpect(status().isNotFound());
 		
-		when(usuarioBean.getUsuario(anyString())).thenReturn(null);
 		mockMvc.perform(get(GET_USER+"/usersearch"))
+			.andExpect(status().isBadRequest());
+		
+		mockMvc.perform(get(GET_USER+"/usersearch")
+				.header("Authorization", "bad token"))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString())).thenReturn(userSession);
+		when(usuarioBean.getUsuario(anyString())).thenReturn(null);
+		mockMvc.perform(get(GET_USER+"/usersearch")
+				.header("Authorization", userSession.getToken()))
 			.andExpect(status().isNoContent());
 		
 		when(usuarioBean.getUsuario(anyString())).thenReturn(usuario);
-		mockMvc.perform(get(GET_USER+"/usersearch"))
-			.andExpect(content().contentType(contentType))
+		mockMvc.perform(get(GET_USER+"/usersearch")
+				.header("Authorization", userSession.getToken()))
 			.andExpect(status().isOk())
+			.andExpect(content().contentType(contentType))
 			.andExpect(jsonPath("$.nombre",is("Nombre user 1")))
 			.andExpect(jsonPath("$.amigos", hasSize(0)))
 			.andExpect(jsonPath("$.apellido", is("Apellido user 1")))

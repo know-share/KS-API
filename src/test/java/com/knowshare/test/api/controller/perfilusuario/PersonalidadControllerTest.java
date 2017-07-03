@@ -34,7 +34,7 @@ public class PersonalidadControllerTest extends AbstractApiTest{
 	
 	private List<Personalidad> personalidades;
 	
-	private static final String FIND_ALL = "/personalidad/findAll";
+	private static final String FIND_ALL = "/api/personalidad/findAll";
 	
 	@Before
 	public void setup(){
