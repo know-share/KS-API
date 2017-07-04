@@ -41,7 +41,7 @@ public class IdeaController {
 	@Autowired
 	private UsuarioFacade usuarioBean;
 	
-	@RequestMapping(value="/crear/{username}" ,method = RequestMethod.POST)
+	@RequestMapping(value="/crear/{username:.+}" ,method = RequestMethod.POST)
 	public ResponseEntity<?> crearIdea(@PathVariable String username,
 			@RequestBody IdeaDTO idea,
 			@RequestHeader("Authorization") String token){
