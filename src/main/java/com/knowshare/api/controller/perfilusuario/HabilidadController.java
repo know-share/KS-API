@@ -69,5 +69,4 @@ public class HabilidadController {
 	public Page<Habilidad> findAll(){
 		return habilidadBean.getAll();
 	}
-
 }
