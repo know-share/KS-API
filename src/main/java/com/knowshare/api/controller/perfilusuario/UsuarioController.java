@@ -62,48 +62,84 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.OK).body(false);
 	}
 	
-	/**
-	 * This method is not available for testing and production
-	 * @param usernameSol
-	 * @param usernameObj
-	 * @return
-	 */
-	@RequestMapping(value = "/seguir/{usernameSol}/{usernameObj}", method = RequestMethod.GET)
+	@RequestMapping(value = "/seguir/{usernameObj:.+}", method = RequestMethod.PUT)
 	public ResponseEntity<?> seguir(
 			@RequestHeader("Authorization") String token,
-			@PathVariable String usernameSol,
 			@PathVariable String usernameObj){
 		UserSession user = userSessionRepository.findByToken(token);
 		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
 		}
+		String username = JWTFilter.getSub(token, user.getSecretKey());
+		if(!username.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		
-		if(usuarioBean.isUsernameTaken(usernameSol) && usuarioBean.isUsernameTaken(usernameObj)){
-			if(usuarioBean.seguir(usernameSol, usernameObj)){
+		if(usuarioBean.isUsernameTaken(usernameObj)){
+			if(usuarioBean.seguir( username,usernameObj)){
 				return ResponseEntity.status(HttpStatus.OK).body(null);
 			}else
 				return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
 		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); 
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); 
 	}
 	
-	@RequestMapping(value = "/solicitud/{usernameSol}/{usernameObj}", method = RequestMethod.GET)
-	public ResponseEntity<?> solicitudAmistad(
+	@RequestMapping(value = "/dejarseguir/{usernameObj:.+}", method = RequestMethod.PUT)
+	public ResponseEntity<?> unfollow(
 			@RequestHeader("Authorization") String token,
-			@PathVariable String usernameSol,
 			@PathVariable String usernameObj){
 		UserSession user = userSessionRepository.findByToken(token);
 		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
 		}
+		String username = JWTFilter.getSub(token, user.getSecretKey());
+		if(!username.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		
-		if(usuarioBean.isUsernameTaken(usernameSol) && usuarioBean.isUsernameTaken(usernameObj)){
-			if(usuarioBean.solicitudAmistad(usernameSol, usernameObj)){
+		if(usuarioBean.isUsernameTaken(usernameObj)){
+			if(usuarioBean.dejarSeguir( username,usernameObj)){
 				return ResponseEntity.status(HttpStatus.OK).body(null);
 			}else
 				return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
 		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null); 
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); 
+	}
+	
+	/**
+	 * 
+	 * @param token
+	 * @param usernameObj
+	 * @param action puede ser: ACCEPT or REJECT
+	 * @return
+	 */
+	@RequestMapping(value = "/solicitud/{usernameObj:.+}", method = RequestMethod.PUT)
+	public ResponseEntity<?> solicitudAmistad(
+			@RequestHeader("Authorization") String token,
+			@PathVariable String usernameObj,
+			@RequestParam(name="action",required=false) String action){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
+		}
+		String username = JWTFilter.getSub(token, user.getSecretKey());
+		if(!username.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
+		if(usuarioBean.isUsernameTaken(usernameObj)){
+			if(null == action)
+				if(usuarioBean.solicitudAmistad(username, usernameObj)){
+					return ResponseEntity.status(HttpStatus.OK).body(null);
+				}else
+					return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+			else{
+				if(action.equalsIgnoreCase("accept") || action.equalsIgnoreCase("reject")){
+					if(usuarioBean.accionSolicitud(username, usernameObj, action))
+						return ResponseEntity.status(HttpStatus.OK).body(null);
+					return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+				}
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+			}
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	}
 	
 	@RequestMapping(value="/get/{username:.+}", method=RequestMethod.GET, produces="application/json")
@@ -114,7 +150,9 @@ public class UsuarioController {
 		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
 		}
-		
+		String usernameToken = JWTFilter.getSub(token, user.getSecretKey());
+		if(!usernameToken.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		
 		if (username == null)
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
