@@ -21,6 +21,8 @@ import com.knowshare.api.security.JWTFilter;
 import com.knowshare.dto.perfilusuario.UsuarioDTO;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
 import com.knowshare.enterprise.repository.app.UserSessionRepository;
+import com.knowshare.entities.academia.FormacionAcademica;
+import com.knowshare.entities.academia.TrabajoGrado;
 import com.knowshare.entities.app.UserSession;
 
 /**
@@ -160,5 +162,59 @@ public class UsuarioController {
 		if(usuario == null)
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		return ResponseEntity.ok(usuario);
+	}
+	
+	@RequestMapping(value="/addTG", method=RequestMethod.POST)
+	public ResponseEntity<?> addTG(
+			@RequestHeader("Authorization") String token,
+			@RequestBody TrabajoGrado tg){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
+		}
+		String usernameToken = JWTFilter.getSub(token, user.getSecretKey());
+		if(!usernameToken.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		if(tg == null)
+			return ResponseEntity.badRequest().body(null);
+		if(usuarioBean.agregarTGDirigido(tg, usernameToken))
+			return ResponseEntity.status(HttpStatus.CREATED).body(null);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	}
+	
+	@RequestMapping(value ="/addFormacionAcademica", method=RequestMethod.POST)
+	public ResponseEntity<?> addFormacionAcademica(
+			@RequestHeader("Authorization") String token,
+			@RequestBody FormacionAcademica fa){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
+		}
+		String usernameToken = JWTFilter.getSub(token, user.getSecretKey());
+		if(!usernameToken.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		if(fa == null)
+			return ResponseEntity.badRequest().body(null);
+		if(usuarioBean.agregarFormacionAcademica(fa, usernameToken))
+			return ResponseEntity.status(HttpStatus.CREATED).body(null);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	}
+	
+	@RequestMapping(value="/eliminarAmigo/{username:.+}", method =RequestMethod.PUT)
+	public ResponseEntity<?> eliminarAmigo(
+			@RequestHeader("Authorization") String token,
+			@PathVariable String username){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
+		}
+		String usernameToken = JWTFilter.getSub(token, user.getSecretKey());
+		if(!usernameToken.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		if(username == null)
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		if(usuarioBean.eliminarAmigo(usernameToken, username))
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 }
