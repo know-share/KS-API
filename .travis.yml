@@ -6,10 +6,10 @@ maven:
 before_install:
   - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Data.git
   - cd KS-Data && mvn install && cd ..
-  - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Admin.git
-  - cd KS-Admin && mvn install -DskipTests && cd ..
-  - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Rules.git
-  - cd KS-Rules && mvn install -DskipTests && cd ..
   - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Enterprise.git
   - cd KS-Enterprise && mvn install -DskipTests && cd ..
+  - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Rules.git
+  - cd KS-Rules && mvn install -DskipTests && cd ..
+  - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Admin.git
+  - cd KS-Admin && mvn install -DskipTests && cd ..
 script: cd $TRAVIS_BUILD_DIR/ && mvn test -B
