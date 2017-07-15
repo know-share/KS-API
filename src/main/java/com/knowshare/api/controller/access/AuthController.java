@@ -23,6 +23,7 @@ import com.knowshare.dto.perfilusuario.AuthDTO;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
 import com.knowshare.enterprise.repository.app.UserSessionRepository;
 import com.knowshare.entities.app.UserSession;
+import com.knowshare.entities.perfilusuario.Usuario;
 
 /**
  * @author miguel
@@ -47,7 +48,9 @@ public class AuthController {
 		logger.debug(":::: Start method login() in authController ::::");
 		if(dto != null){
 			if(dto.getUsername() != null || dto.getPassword()!=null){
-				if(usuarioBean.login(dto.getUsername(), dto.getPassword())){
+				Usuario usuario = usuarioBean.login(dto.getUsername(), dto.getPassword()); 
+				if(null != usuario){
+					dto.setUsername(usuario.getUsername());
 					UserSession us = JWTFilter.generateToken(dto);
 					if(null == us)
 						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
