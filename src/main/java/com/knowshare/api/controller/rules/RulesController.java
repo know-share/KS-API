@@ -45,6 +45,11 @@ public class RulesController {
 	@Autowired
 	private UsuarioFacade bean;
 	
+	/**
+	 * Controller aún en pruebas
+	 * @param token
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value="/recomendacionConexiones", method=RequestMethod.GET)
 	public ResponseEntity<?> testMethodRules(
@@ -56,6 +61,7 @@ public class RulesController {
 		String username = JWTFilter.getSub(token, user.getSecretKey());
 		if(!username.equalsIgnoreCase(user.getUsername()))
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
 		List<InfoUsuario> recomendaciones = (List<InfoUsuario>)ruleTest
 				.recomendacionesUsuario(bean.getUsuario("MinMiguelM"));
 		if(recomendaciones.isEmpty())

@@ -18,11 +18,11 @@ import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.enterprise.bean.idea.IdeaFacade;
 import com.knowshare.enterprise.repository.app.UserSessionRepository;
 import com.knowshare.entities.app.UserSession;
+
 /**
  * @author Pablo Gaitan
  *
  */
-
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/idea")
@@ -42,7 +42,11 @@ public class IdeaController {
 		if(sesion == null|| !JWTFilter.validateToken(token, sesion.getSecretKey())){
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		}
-		idea.setUsuario(sesion.getUsername());
+		String username = JWTFilter.getSub(token, sesion.getSecretKey());
+		if(!username.equalsIgnoreCase(sesion.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
+		idea.setUsuario(username);
 		IdeaDTO crear = ideaBean.crearIdea(idea);
 		if(crear!= null){
 			return ResponseEntity.status(HttpStatus.OK).body(crear);

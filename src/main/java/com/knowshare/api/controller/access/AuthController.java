@@ -47,7 +47,7 @@ public class AuthController {
 	public ResponseEntity<?> login(@RequestBody AuthDTO dto) throws Exception{
 		logger.debug(":::: Start method login() in authController ::::");
 		if(dto != null){
-			if(dto.getUsername() != null || dto.getPassword()!=null){
+			if(dto.getUsername() != null && dto.getPassword()!=null){
 				Usuario usuario = usuarioBean.login(dto.getUsername(), dto.getPassword()); 
 				if(null != usuario){
 					dto.setUsername(usuario.getUsername());

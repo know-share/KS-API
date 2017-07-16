@@ -164,7 +164,7 @@ public class UsuarioController {
 		return ResponseEntity.ok(usuario);
 	}
 	
-	@RequestMapping(value="/addTG", method=RequestMethod.POST)
+	@RequestMapping(value="/addTG", method=RequestMethod.POST,consumes="application/json")
 	public ResponseEntity<?> addTG(
 			@RequestHeader("Authorization") String token,
 			@RequestBody TrabajoGrado tg){
@@ -175,6 +175,7 @@ public class UsuarioController {
 		String usernameToken = JWTFilter.getSub(token, user.getSecretKey());
 		if(!usernameToken.equalsIgnoreCase(user.getUsername()))
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
 		if(tg == null)
 			return ResponseEntity.badRequest().body(null);
 		if(usuarioBean.agregarTGDirigido(tg, usernameToken))
@@ -182,7 +183,7 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 	
-	@RequestMapping(value ="/addFormacionAcademica", method=RequestMethod.POST)
+	@RequestMapping(value ="/addFormacionAcademica", method=RequestMethod.POST,consumes="application/json")
 	public ResponseEntity<?> addFormacionAcademica(
 			@RequestHeader("Authorization") String token,
 			@RequestBody FormacionAcademica fa){
@@ -193,6 +194,7 @@ public class UsuarioController {
 		String usernameToken = JWTFilter.getSub(token, user.getSecretKey());
 		if(!usernameToken.equalsIgnoreCase(user.getUsername()))
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
 		if(fa == null)
 			return ResponseEntity.badRequest().body(null);
 		if(usuarioBean.agregarFormacionAcademica(fa, usernameToken))
@@ -211,6 +213,7 @@ public class UsuarioController {
 		String usernameToken = JWTFilter.getSub(token, user.getSecretKey());
 		if(!usernameToken.equalsIgnoreCase(user.getUsername()))
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
 		if(username == null)
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 		if(usuarioBean.eliminarAmigo(usernameToken, username))
