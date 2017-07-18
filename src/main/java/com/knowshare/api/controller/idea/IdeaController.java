@@ -3,10 +3,13 @@
  */
 package com.knowshare.api.controller.idea;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,5 +56,25 @@ public class IdeaController {
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		
+	}
+	
+	@RequestMapping(value = "/findByUsuario/{usernameObj:.+}",method=RequestMethod.GET)
+	public ResponseEntity<?> findByUsuario(@RequestHeader("Authorization") String token,
+			@PathVariable String usernameObj){
+		UserSession sesion = userSessionRepository.findByToken(token);
+		if(sesion == null || !JWTFilter.validateToken(token, sesion.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		}
+		String username = JWTFilter.getSub(token, sesion.getSecretKey());
+		if(!username.equalsIgnoreCase(sesion.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		List<IdeaDTO> ret = ideaBean.findByUsuario(username);
+		if(!ret.isEmpty()){
+			return ResponseEntity.status(HttpStatus.OK).body(ret);
+		}
+		if(ret.isEmpty()){
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
 	}
 }
