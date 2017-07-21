@@ -220,4 +220,23 @@ public class UsuarioController {
 			return ResponseEntity.status(HttpStatus.OK).body(null);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
+	
+	@RequestMapping(value="/actualizarInfoAcademica", method =RequestMethod.PATCH)
+	public ResponseEntity<?> actualizarInfoAcademica(
+			@RequestHeader("Authorization") String token,
+			@RequestBody UsuarioDTO usuario){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
+		}
+		String usernameToken = JWTFilter.getSub(token, user.getSecretKey());
+		if(!usernameToken.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
+		if(usuario == null)
+			return ResponseEntity.badRequest().body(null);
+		if(usuarioBean.actualizarInfoAcademica(usuario))
+			return ResponseEntity.ok(null);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	}
 }
