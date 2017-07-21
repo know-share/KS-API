@@ -68,6 +68,7 @@ public class IdeaController {
 		String username = JWTFilter.getSub(token, sesion.getSecretKey());
 		if(!username.equalsIgnoreCase(sesion.getUsername()))
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
 		List<IdeaDTO> ret = ideaBean.findByUsuario(username);
 		if(!ret.isEmpty()){
 			return ResponseEntity.status(HttpStatus.OK).body(ret);
