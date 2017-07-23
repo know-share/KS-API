@@ -21,6 +21,7 @@ import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.enterprise.bean.idea.IdeaFacade;
 import com.knowshare.enterprise.repository.app.UserSessionRepository;
 import com.knowshare.entities.app.UserSession;
+import com.knowshare.entities.idea.Tag;
 
 /**
  * @author Pablo Gaitan
@@ -69,7 +70,7 @@ public class IdeaController {
 		if(!username.equalsIgnoreCase(sesion.getUsername()))
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		
-		List<IdeaDTO> ret = ideaBean.findByUsuario(username);
+		List<IdeaDTO> ret = ideaBean.findByUsuario(usernameObj);
 		if(!ret.isEmpty()){
 			return ResponseEntity.status(HttpStatus.OK).body(ret);
 		}
@@ -78,4 +79,21 @@ public class IdeaController {
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
 	}
-}
+	
+	@RequestMapping(value="/find10" ,method = RequestMethod.GET)
+	public ResponseEntity<?> find(
+			@RequestHeader("Authorization") String token){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
+		}
+		String username = JWTFilter.getSub(token, user.getSecretKey());
+		if(!username.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
+		List<IdeaDTO> ideas = ideaBean.find10();
+		if(ideas == null || ideas.isEmpty()){
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(ideas);
+	}}
