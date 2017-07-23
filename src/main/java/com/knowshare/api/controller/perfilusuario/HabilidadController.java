@@ -66,7 +66,8 @@ public class HabilidadController {
 	 * @return
 	 */
 	@RequestMapping(value="/findAll", method=RequestMethod.GET)
-	public Page<Habilidad> findAll(){
-		return habilidadBean.getAll();
+	public Page<Habilidad> findAll(
+			@RequestParam(defaultValue="0") Integer page){
+		return habilidadBean.getAll(page);
 	}
 }
