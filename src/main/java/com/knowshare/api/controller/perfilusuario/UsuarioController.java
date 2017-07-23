@@ -51,6 +51,16 @@ public class UsuarioController {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioBean.isUsernameTaken(username));
 	}
+	
+	@RequestMapping(value = "isCorreoTaken", method = RequestMethod.GET)
+	public ResponseEntity<Boolean> isCorreoTaken(@RequestParam String correo) {
+		logger.debug(":::: Start method isCorreoTaken(String) in UsuarioController ::::");
+		if (correo == null || correo.isEmpty()) {
+			logger.error(":::: Error parameter correo is not in the request ::::");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(usuarioBean.isCorreoTaken(correo));
+	}
 
 	@RequestMapping(value = "", method = RequestMethod.POST, consumes="application/json")
 	public ResponseEntity<?> crearUsuario(@RequestBody UsuarioDTO dto) {
@@ -236,6 +246,44 @@ public class UsuarioController {
 		if(usuario == null)
 			return ResponseEntity.badRequest().body(null);
 		if(usuarioBean.actualizarInfoAcademica(usuario))
+			return ResponseEntity.ok(null);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	}
+	
+	@RequestMapping(value="/actualizarHabilidadCualidad", method =RequestMethod.PATCH)
+	public ResponseEntity<?> actualizarHabilidadCualidad(
+			@RequestHeader("Authorization") String token,
+			@RequestBody UsuarioDTO usuario){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
+		}
+		String usernameToken = JWTFilter.getSub(token, user.getSecretKey());
+		if(!usernameToken.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
+		if(usuario == null)
+			return ResponseEntity.badRequest().body(null);
+		if(usuarioBean.actualizarHabilidadCualidad(usuario))
+			return ResponseEntity.ok(null);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	}
+	
+	@RequestMapping(value="/actualizarBasis", method =RequestMethod.PATCH)
+	public ResponseEntity<?> actualizarBasis(
+			@RequestHeader("Authorization") String token,
+			@RequestBody UsuarioDTO usuario){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
+		}
+		String usernameToken = JWTFilter.getSub(token, user.getSecretKey());
+		if(!usernameToken.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
+		if(usuario == null)
+			return ResponseEntity.badRequest().body(null);
+		if(usuarioBean.actualizarBasis(usuario))
 			return ResponseEntity.ok(null);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
