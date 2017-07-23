@@ -3,6 +3,8 @@
  */
 package com.knowshare.api.controller.idea;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +19,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knowshare.api.security.JWTFilter;
+import com.knowshare.dto.idea.Comentario;
 import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.enterprise.bean.idea.IdeaFacade;
 import com.knowshare.enterprise.repository.app.UserSessionRepository;
 import com.knowshare.entities.app.UserSession;
-import com.knowshare.entities.idea.Tag;
+import com.knowshare.entities.idea.OperacionIdea;
+import com.knowshare.enums.TipoIdeaEnum;
+import com.knowshare.enums.TipoOperacionEnum;
 
 /**
  * @author Pablo Gaitan
@@ -96,4 +101,52 @@ public class IdeaController {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(ideas);
-	}}
+	}
+	
+	@RequestMapping(value="/comentar" ,method = RequestMethod.POST)
+	public ResponseEntity<?> comentario(@RequestHeader("Authorization") String token,
+			@RequestBody Comentario params){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false); 
+		}
+		String username = JWTFilter.getSub(token, user.getSecretKey());
+		if(!username.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+		IdeaDTO idea = params.getIdea();
+		OperacionIdea operacion = new OperacionIdea();
+		operacion.setUsername(user.getUsername());
+		operacion.setFecha(new Date());
+		operacion.setContenido(params.getComentario());
+		operacion.setTipo(TipoOperacionEnum.COMENTARIO);
+		
+		if(ideaBean.agregarOperacion(idea, operacion) != null){
+			return ResponseEntity.status(HttpStatus.OK).body(true);
+		}
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);	
+	}
+	
+	@RequestMapping(value="/light" ,method = RequestMethod.POST)
+	public ResponseEntity<?> light(@RequestHeader("Authorization") String token,
+			@RequestBody IdeaDTO params){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false); 
+		}
+		String username = JWTFilter.getSub(token, user.getSecretKey());
+		if(!username.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+		OperacionIdea operacion = new OperacionIdea();
+		operacion.setUsername(user.getUsername());
+		operacion.setFecha(new Date());
+		operacion.setContenido(null);
+		operacion.setTipo(TipoOperacionEnum.LIGHT);
+		
+		if(ideaBean.agregarOperacion(params, operacion) != null){
+			return ResponseEntity.status(HttpStatus.OK).body(true);
+		}
+		
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+		
+	}
+}
