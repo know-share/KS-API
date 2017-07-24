@@ -52,7 +52,8 @@ public class JWTFilter {
 			// Prepare JWT with claims set
 			JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
 					.subject(creds.getUsername())
-					.expirationTime(new Date(calendar.getTimeInMillis() + (1000 * 120)))
+					// token lasts a day
+					.expirationTime(new Date(calendar.getTimeInMillis() + (1000 * 86400)))
 					.build();
 			
 			// Set the payload
@@ -91,15 +92,33 @@ public class JWTFilter {
 		}
 
 		// Get the plain text
-//		Payload payload = jweObject.getPayload();
-//		if(isExpired(((Date)payload.toJSONObject().get("exp")).getTime()))
-//			return false;
+		Payload payload = jweObject.getPayload();
+		if(isExpired((Long)payload.toJSONObject().get("exp")))
+			return false;
 
 		return true;
 	}
 	
+	public static String getSub(String token, String secret){
+		SecretKey secretKey = convertSecretKey(secret);
+		JWEObject jweObject;
+
+		// Decrypt
+		try {
+			jweObject = JWEObject.parse(token);
+			jweObject.decrypt(new DirectDecrypter(secretKey));
+		} catch (Exception e) {
+			logger.error("::::: Error getting sub from the next token: "+token
+				+ " :::::");
+			return null;
+		}
+		
+		Payload payload = jweObject.getPayload();
+		return (String)payload.toJSONObject().get("sub");
+	}
+	
 	private static boolean isExpired(long timestamp){
-		return timestamp<System.currentTimeMillis();
+		return timestamp < (System.currentTimeMillis()/1000);
 	}
 	
 	private static SecretKey convertSecretKey(String secretKey){
