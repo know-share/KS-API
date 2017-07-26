@@ -43,7 +43,7 @@ public class RulesController {
 	private UserSessionRepository userSessionRepository;
 	
 	@Autowired
-	private UsuarioFacade bean;
+	private UsuarioFacade usuarioBean;
 	
 	/**
 	 * Controller aún en pruebas
@@ -63,7 +63,7 @@ public class RulesController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		
 		List<InfoUsuario> recomendaciones = (List<InfoUsuario>)ruleTest
-				.recomendacionesUsuario(bean.getUsuario("MinMiguelM"));
+				.recomendacionesUsuario(usuarioBean.getUsuario(username));
 		if(recomendaciones.isEmpty())
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		return ResponseEntity.ok(recomendaciones);

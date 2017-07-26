@@ -4,7 +4,6 @@
 package com.knowshare.api.controller.idea;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import com.knowshare.enterprise.bean.idea.IdeaFacade;
 import com.knowshare.enterprise.repository.app.UserSessionRepository;
 import com.knowshare.entities.app.UserSession;
 import com.knowshare.entities.idea.OperacionIdea;
-import com.knowshare.enums.TipoIdeaEnum;
 import com.knowshare.enums.TipoOperacionEnum;
 
 /**
