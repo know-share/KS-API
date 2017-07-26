@@ -58,6 +58,7 @@ public class AuthController {
 					userSessionRepository.insert(us);
 					Map<String, String> map = new HashMap<>();
 					map.put("token", us.getToken());
+					map.put("role", usuario.getTipo().name());
 					return ResponseEntity.status(HttpStatus.OK).body(map);
 				}
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);

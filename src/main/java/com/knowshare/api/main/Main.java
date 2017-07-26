@@ -5,6 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+/**
+ * Clase principal donde el servidor tomcat embebido
+ * inicia la ejecución
+ * @author Miguel Montañez
+ *
+ */
 @SpringBootApplication
 @EnableMongoRepositories(basePackages={"com.knowshare.enterprise.repository"})
 @ComponentScan(basePackages={"com.knowshare.enterprise.bean","com.knowshare.api.controller"})

@@ -24,9 +24,11 @@ import com.knowshare.enterprise.repository.app.UserSessionRepository;
 import com.knowshare.entities.academia.FormacionAcademica;
 import com.knowshare.entities.academia.TrabajoGrado;
 import com.knowshare.entities.app.UserSession;
+import com.knowshare.entities.perfilusuario.Usuario;
 
 /**
- * @author miguel
+ * Endpoints para operaciones con objeto de tipo {@link Usuario}
+ * @author Miguel Montañez
  *
  */
 @RestController
@@ -42,6 +44,13 @@ public class UsuarioController {
 	@Autowired
 	private UserSessionRepository userSessionRepository;
 
+	/**
+	 * Revisa si el username dado ya está registrado en
+	 * la aplicación.
+	 * @param username que se verificará
+	 * @return true si ya está tomado dicho username, de lo
+	 * contrario false.
+	 */
 	@RequestMapping(value = "isUsernameTaken", method = RequestMethod.GET)
 	public ResponseEntity<Boolean> isUsernameTaken(@RequestParam String username) {
 		logger.debug(":::: Start method isUsernameTaken(String) in UsuarioController ::::");
@@ -52,6 +61,13 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioBean.isUsernameTaken(username));
 	}
 	
+	/**
+	 * Revisa si el correo dado ya está registrado en 
+	 * la aplicación
+	 * @param correo que se verificará
+	 * @return true si ya está tomado dicho correo, de lo
+	 * contrario false.
+	 */
 	@RequestMapping(value = "isCorreoTaken", method = RequestMethod.GET)
 	public ResponseEntity<Boolean> isCorreoTaken(@RequestParam String correo) {
 		logger.debug(":::: Start method isCorreoTaken(String) in UsuarioController ::::");
@@ -62,6 +78,14 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.OK).body(usuarioBean.isCorreoTaken(correo));
 	}
 
+	/**
+	 * Controlador de creación de un usuario, recibe el DTO
+	 * que posteriormente es convertido a la entidad correspondiente.
+	 * @param dto Usuario con la información de registro de tipo {@link UsuarioDTO}
+	 * @return {@link HttpStatus.OK}, si no se pudo crear, pero la 
+	 * solicitud fue correcta. {@link HttpStatus.CREATED}, si el usuario pudo ser creado.
+	 * De lo contrario {@link HttpStatus.BAD_REQUEST}
+	 */
 	@RequestMapping(value = "", method = RequestMethod.POST, consumes="application/json")
 	public ResponseEntity<?> crearUsuario(@RequestBody UsuarioDTO dto) {
 		logger.debug(":::: Start method crearUsuario(UsuarioDTO) in UsuarioController ::::");
@@ -74,6 +98,16 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.OK).body(false);
 	}
 	
+	/**
+	 * Acción de seguir sobre un usuario específico.
+	 * @param token para validar la autenticidad del cliente.
+	 * @param usernameObj Usuario a seguir
+	 * @return {@link HttpStatus.UNAUTHORIZED} si el token no es válido o
+	 * ha expirado. {@link HttpStatus.OK} si la operación pudo llevarse
+	 * a cabo. {@link HttpStatus.NOT_MODIFIED} si no pudo seguirlo debido a
+	 * que ya lo seguía previamente. {@link HttpStatus.NOT_FOUND} el usuario
+	 * especificado en el parámetro no se encuentra.
+	 */
 	@RequestMapping(value = "/seguir/{usernameObj:.+}", method = RequestMethod.PUT)
 	public ResponseEntity<?> seguir(
 			@RequestHeader("Authorization") String token,
@@ -95,6 +129,16 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null); 
 	}
 	
+	/**
+	 * Acción de dejar de seguir sobre un usuario específico.
+	 * @param token para validar la autenticidad del cliente.
+	 * @param usernameObj usuario a dejar de seguir.
+	 * @return {@link HttpStatus.UNAUTHORIZED} si el token no es válido o
+	 * ha expirado. {@link HttpStatus.OK} si la operación pudo llevarse
+	 * a cabo. {@link HttpStatus.NOT_MODIFIED} si no pudo dejarlo de seguir 
+	 * debido a que no lo seguía previamente. {@link HttpStatus.NOT_FOUND} el usuario
+	 * especificado en el parámetro no se encuentra.
+	 */
 	@RequestMapping(value = "/dejarseguir/{usernameObj:.+}", method = RequestMethod.PUT)
 	public ResponseEntity<?> unfollow(
 			@RequestHeader("Authorization") String token,
@@ -117,11 +161,18 @@ public class UsuarioController {
 	}
 	
 	/**
-	 * 
-	 * @param token
-	 * @param usernameObj
+	 * Registro de una solicitud de amistad, sin embargo, si se envía
+	 * el parámetro 'action' en la solicitud, la operación es aceptar 
+	 * o rechazar una solicitud de amistad.
+	 * @param token para validar la autenticidad del cliente.
+	 * @param usernameObj usuario dueño de la solicitud
 	 * @param action puede ser: ACCEPT or REJECT
-	 * @return
+	 * @return {@link HttpStatus.UNAUTHORIZED} si el token no es válido o
+	 * ha expirado. {@link HttpStatus.OK} si la operación pudo llevarse
+	 * a cabo. {@link HttpStatus.NOT_MODIFIED} si no se pudo ejecutar la
+	 * acción. {@link HttpStatus.NOT_FOUND} el usuario especificado en el 
+	 * parámetro no se encuentra. {@link HttpStatus.BAD_REQUEST} si el parámetro
+	 * action no es de los dos posibles valores.
 	 */
 	@RequestMapping(value = "/solicitud/{usernameObj:.+}", method = RequestMethod.PUT)
 	public ResponseEntity<?> solicitudAmistad(
@@ -154,6 +205,12 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	}
 	
+	/**
+	 * 
+	 * @param token
+	 * @param username
+	 * @return
+	 */
 	@RequestMapping(value="/get/{username:.+}", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<UsuarioDTO> getUsuario(
 			@RequestHeader("Authorization") String token,

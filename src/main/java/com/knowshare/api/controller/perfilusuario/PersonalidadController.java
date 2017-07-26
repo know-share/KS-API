@@ -17,7 +17,8 @@ import com.knowshare.enterprise.bean.personalidad.PersonalidadFacade;
 import com.knowshare.entities.perfilusuario.Personalidad;
 
 /**
- * @author miguel
+ * Endpoints para operaciones con objeto de tipo {@link Personalidad}
+ * @author Miguel Montañez
  *
  */
 @RestController
@@ -28,6 +29,11 @@ public class PersonalidadController{
 	@Autowired
 	private PersonalidadFacade personalidadBean;
 	
+	/**
+	 * Obtiene todas las personalidades registradas en la aplicación
+	 * @return {@link HttpStatus.OK} si la lista de personalidades tiene
+	 * al menos un elemento, si no {@link HttpStatus.NO_CONTENT}
+	 */
 	@RequestMapping(value="/findAll", method=RequestMethod.GET)
 	public ResponseEntity<List<Personalidad>> getAllPersonalidades(){	
 		List<Personalidad> personalidades = personalidadBean.getAllPersonalidades();

@@ -25,7 +25,7 @@ import com.knowshare.entities.perfilusuario.InfoUsuario;
 /**
  * Controlador para reglas de negocio dentro de la aplicación de
  * KnowShare
- * @author miguel
+ * @author Miguel Montañez
  *
  */
 @RestController
@@ -46,9 +46,9 @@ public class RulesController {
 	private UsuarioFacade usuarioBean;
 	
 	/**
-	 * Controller aún en pruebas
-	 * @param token
-	 * @return
+	 * Obtiene las recomendaciones para el usuario actual.
+	 * @param token para validar la autenticidad del cliente.
+	 * @return Lista de recomendaciones
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value="/recomendacionConexiones", method=RequestMethod.GET)
