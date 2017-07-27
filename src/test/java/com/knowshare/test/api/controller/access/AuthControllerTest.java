@@ -17,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.knowshare.dto.perfilusuario.AuthDTO;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
 import com.knowshare.entities.perfilusuario.Usuario;
+import com.knowshare.enums.TipoUsuariosEnum;
 import com.knowshare.test.api.general.AbstractApiTest;
 
 /**
@@ -50,14 +51,16 @@ public class AuthControllerTest extends AbstractApiTest {
 			.andExpect(status().isUnauthorized());
 		
 		when(usuarioBean.login("USERNAME", "PASSWORD"))
-			.thenReturn(new Usuario().setUsername("USERNAME"));
+			.thenReturn(new Usuario().setUsername("USERNAME")
+					.setTipo(TipoUsuariosEnum.ESTUDIANTE));
 		mockMvc.perform(post(LOGIN)
 				.accept(contentType)
 				.contentType(contentType)
 				.content(asJsonString(auth)))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(contentType))
-			.andExpect(jsonPath("$.token").isNotEmpty());
+			.andExpect(jsonPath("$.token").isNotEmpty())
+			.andExpect(jsonPath("$.role").isNotEmpty());
 	}
 	
 	@Test
