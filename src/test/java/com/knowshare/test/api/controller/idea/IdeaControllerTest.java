@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -38,7 +37,7 @@ public class IdeaControllerTest extends AbstractApiTest {
 	@Before
 	public void setup(){
 		idea = new IdeaDTO()
-				.setId(new String())
+				.setId(new String("id"))
 				.setAlcance("Alcance")
 				.setContenido("Idea nueva")
 				.setNumeroEstudiantes(3)
