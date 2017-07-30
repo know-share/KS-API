@@ -38,7 +38,7 @@ public class IdeaControllerTest extends AbstractApiTest {
 	@Before
 	public void setup(){
 		idea = new IdeaDTO()
-				.setId(new ObjectId())
+				.setId(new String())
 				.setAlcance("Alcance")
 				.setContenido("Idea nueva")
 				.setNumeroEstudiantes(3)
