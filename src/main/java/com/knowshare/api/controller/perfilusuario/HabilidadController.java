@@ -20,7 +20,7 @@ import com.knowshare.enterprise.bean.habilidad.HabilidadFacade;
 import com.knowshare.entities.perfilusuario.Habilidad;
 
 /**
- * @author miguel
+ * @author Miguel Montañez
  *
  */
 @RestController
