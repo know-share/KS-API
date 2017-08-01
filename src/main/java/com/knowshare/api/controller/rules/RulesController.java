@@ -104,11 +104,6 @@ public class RulesController {
 		return ResponseEntity.ok(busqueda);
 	}
 	
-	@RequestMapping(value="/prueba", method=RequestMethod.GET)
-	public void test(){
-		this.usuarioBean.buscarPorHabilidad(usuarioBean.getUsuario("MinMiguelM"), "preciso");
-	}
-	
 	@RequestMapping(value="/update", method=RequestMethod.GET)
 	public void updateRules(){
 		rulesAdminBean.updateRules();
