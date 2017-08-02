@@ -166,4 +166,23 @@ public class IdeaController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		
 	}
+	
+	@RequestMapping(value="/compartir" ,method = RequestMethod.POST)
+	public ResponseEntity<?> compartir(@RequestHeader("Authorization") String token,
+			@RequestBody IdeaDTO dto){
+		UserSession user = userSessionRepository.findByToken(token);
+		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
+		}
+		String username = JWTFilter.getSub(token, user.getSecretKey());
+		if(!username.equalsIgnoreCase(user.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		IdeaDTO ret = ideaBean.compartir(dto, username);
+		if(ret != null){
+			return ResponseEntity.status(HttpStatus.OK).body(ret);
+		}
+		
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		
+	}
 }
