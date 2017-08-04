@@ -74,7 +74,7 @@ public class AuthController {
 		Long number = userSessionRepository.removeByToken(token);
 		if(number == 1)
 			return ResponseEntity.ok(null);
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+		return ResponseEntity.status(HttpStatus.NOT_MODIFIED)
 				.body(null);
 	}
 }
