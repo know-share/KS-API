@@ -3,12 +3,15 @@
  */
 package com.knowshare.api.controller.perfilusuario;
 
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,12 +20,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.knowshare.dto.perfilusuario.ImagenDTO;
 import com.knowshare.dto.perfilusuario.UsuarioDTO;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
 import com.knowshare.entities.academia.FormacionAcademica;
 import com.knowshare.entities.academia.TrabajoGrado;
 import com.knowshare.entities.perfilusuario.Usuario;
+import com.knowshare.enums.TipoImagenEnum;
 
 /**
  * Endpoints para operaciones con objeto de tipo {@link Usuario}
@@ -35,6 +41,8 @@ import com.knowshare.entities.perfilusuario.Usuario;
 public class UsuarioController {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	private static final String USERNAME = "username";
 
 	@Autowired
 	private UsuarioFacade usuarioBean;
@@ -82,7 +90,7 @@ public class UsuarioController {
 	 * De lo contrario {@link HttpStatus.BAD_REQUEST}
 	 */
 	@RequestMapping(value = "", method = RequestMethod.POST, consumes="application/json")
-	public ResponseEntity<?> crearUsuario(@RequestBody UsuarioDTO dto) {
+	public ResponseEntity<Object> crearUsuario(@RequestBody UsuarioDTO dto) {
 		logger.debug(":::: Start method crearUsuario(UsuarioDTO) in UsuarioController ::::");
 		if (dto == null) {
 			logger.error(":::: Error parameter dto is not in the request ::::");
@@ -104,10 +112,10 @@ public class UsuarioController {
 	 * especificado en el parámetro no se encuentra.
 	 */
 	@RequestMapping(value = "/seguir/{usernameObj:.+}", method = RequestMethod.PUT)
-	public ResponseEntity<?> seguir(
+	public ResponseEntity<Object> seguir(
 			@PathVariable String usernameObj,
 			HttpServletRequest request){
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		if(usuarioBean.isUsernameTaken(usernameObj)){
 			if(usuarioBean.seguir( username,usernameObj)){
 				return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -128,10 +136,10 @@ public class UsuarioController {
 	 * especificado en el parámetro no se encuentra.
 	 */
 	@RequestMapping(value = "/dejarseguir/{usernameObj:.+}", method = RequestMethod.PUT)
-	public ResponseEntity<?> unfollow(
+	public ResponseEntity<Object> unfollow(
 			HttpServletRequest request,
 			@PathVariable String usernameObj){
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		if(usuarioBean.isUsernameTaken(usernameObj)){
 			if(usuarioBean.dejarSeguir( username,usernameObj)){
 				return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -156,18 +164,17 @@ public class UsuarioController {
 	 * action no es de los dos posibles valores.
 	 */
 	@RequestMapping(value = "/solicitud/{usernameObj:.+}", method = RequestMethod.PUT)
-	public ResponseEntity<?> solicitudAmistad(
+	public ResponseEntity<Object> solicitudAmistad(
 			HttpServletRequest request,
 			@PathVariable String usernameObj,
 			@RequestParam(name="action",required=false) String action){
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		if(usuarioBean.isUsernameTaken(usernameObj)){
-			if(null == action)
-				if(usuarioBean.solicitudAmistad(username, usernameObj)){
+			if(null == action){
+				if(usuarioBean.solicitudAmistad(username, usernameObj))
 					return ResponseEntity.status(HttpStatus.OK).body(null);
-				}else
-					return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
-			else{
+				return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+			}else{
 				if(action.equalsIgnoreCase("accept") || action.equalsIgnoreCase("reject")){
 					if(usuarioBean.accionSolicitud(username, usernameObj, action))
 						return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -197,10 +204,10 @@ public class UsuarioController {
 	}
 	
 	@RequestMapping(value="/addTG", method=RequestMethod.POST,consumes="application/json")
-	public ResponseEntity<?> addTG(
+	public ResponseEntity<Object> addTG(
 			HttpServletRequest request,
 			@RequestBody TrabajoGrado tg){
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		if(tg == null)
 			return ResponseEntity.badRequest().body(null);
 		if(usuarioBean.agregarTGDirigido(tg, username))
@@ -209,10 +216,10 @@ public class UsuarioController {
 	}
 	
 	@RequestMapping(value ="/addFormacionAcademica", method=RequestMethod.POST,consumes="application/json")
-	public ResponseEntity<?> addFormacionAcademica(
+	public ResponseEntity<Object> addFormacionAcademica(
 			HttpServletRequest request,
 			@RequestBody FormacionAcademica fa){
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		if(fa == null)
 			return ResponseEntity.badRequest().body(null);
 		if(usuarioBean.agregarFormacionAcademica(fa, username))
@@ -221,7 +228,7 @@ public class UsuarioController {
 	}
 	
 	@RequestMapping(value="/eliminarAmigo/{username:.+}", method =RequestMethod.PUT)
-	public ResponseEntity<?> eliminarAmigo(
+	public ResponseEntity<Object> eliminarAmigo(
 			HttpServletRequest request,
 			@PathVariable String username){
 		if(username == null)
@@ -233,7 +240,7 @@ public class UsuarioController {
 	}
 	
 	@RequestMapping(value="/actualizarInfoAcademica", method =RequestMethod.PATCH)
-	public ResponseEntity<?> actualizarInfoAcademica(
+	public ResponseEntity<Object> actualizarInfoAcademica(
 			HttpServletRequest request,
 			@RequestBody UsuarioDTO usuario){
 		if(usuario == null)
@@ -244,7 +251,7 @@ public class UsuarioController {
 	}
 	
 	@RequestMapping(value="/actualizarHabilidadCualidad", method =RequestMethod.PATCH)
-	public ResponseEntity<?> actualizarHabilidadCualidad(
+	public ResponseEntity<Object> actualizarHabilidadCualidad(
 			HttpServletRequest request,
 			@RequestBody UsuarioDTO usuario){
 		if(usuario == null)
@@ -255,7 +262,7 @@ public class UsuarioController {
 	}
 	
 	@RequestMapping(value="/actualizarBasis", method =RequestMethod.PATCH)
-	public ResponseEntity<?> actualizarBasis(
+	public ResponseEntity<Object> actualizarBasis(
 			HttpServletRequest request,
 			@RequestBody UsuarioDTO usuario){
 		if(usuario == null)
@@ -263,5 +270,33 @@ public class UsuarioController {
 		if(usuarioBean.actualizarBasis(usuario))
 			return ResponseEntity.ok(null);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	}
+	
+	@RequestMapping(value="/upload", method=RequestMethod.POST)
+	public ResponseEntity<Object> uploadImage(
+			@RequestParam MultipartFile file,
+			HttpServletRequest request){
+		final String username = request.getAttribute(USERNAME).toString();
+		if(null == file)
+			return ResponseEntity.badRequest().body(null);
+		if(this.usuarioBean.uploadImage(username, file))
+			return ResponseEntity.ok(null);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+	}
+	
+	@RequestMapping(value="/image/{username:.+}", method=RequestMethod.GET)
+	public ResponseEntity<byte[]> getImage(
+			@PathVariable String username){
+		final ImagenDTO image = this.usuarioBean.getImage(username);
+		if(image.isResult()){
+			HttpHeaders headers = new HttpHeaders();
+			if(image.getType().equals(TipoImagenEnum.PNG))
+				headers.setContentType(MediaType.IMAGE_PNG);
+			else
+				headers.setContentType(MediaType.IMAGE_JPEG);
+		    headers.setContentLength(image.getBytes().length);
+		    return new ResponseEntity<>(image.getBytes(), headers, HttpStatus.OK);
+		}
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	}
 }
