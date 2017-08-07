@@ -83,6 +83,27 @@ public class IdeaController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
 	}
 	
+	@RequestMapping(value = "/findByUsuarioPro/{usernameObj:.+}",method=RequestMethod.GET)
+	public ResponseEntity<?> findByUsuarioPro(@RequestHeader("Authorization") String token,
+			@PathVariable String usernameObj){
+		UserSession sesion = userSessionRepository.findByToken(token);
+		if(sesion == null || !JWTFilter.validateToken(token, sesion.getSecretKey())){
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		}
+		String username = JWTFilter.getSub(token, sesion.getSecretKey());
+		if(!username.equalsIgnoreCase(sesion.getUsername()))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
+		List<IdeaDTO> ret = ideaBean.findByUsuarioProyecto(usernameObj);
+		if(!ret.isEmpty()){
+			return ResponseEntity.status(HttpStatus.OK).body(ret);
+		}
+		if(ret.isEmpty()){
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
+	}
+	
 	@RequestMapping(value="/find10" ,method = RequestMethod.GET)
 	public ResponseEntity<?> find(
 			@RequestHeader("Authorization") String token){
