@@ -5,24 +5,22 @@ package com.knowshare.api.controller.rules;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knowshare.api.security.JWTFilter;
 import com.knowshare.dto.rules.RecomendacionDTO;
 import com.knowshare.enterprise.bean.rules.busqueda.BusquedaUsuarioFacade;
 import com.knowshare.enterprise.bean.rules.config.RulesAdminFacade;
 import com.knowshare.enterprise.bean.rules.usuarios.RecomendacionConexionFacade;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
-import com.knowshare.enterprise.repository.app.UserSessionRepository;
-import com.knowshare.entities.app.UserSession;
 
 /**
  * Controlador para reglas de negocio dentro de la aplicación de
@@ -45,9 +43,6 @@ public class RulesController {
 	private RulesAdminFacade rulesAdminBean;
 	
 	@Autowired
-	private UserSessionRepository userSessionRepository;
-	
-	@Autowired
 	private UsuarioFacade usuarioBean;
 	
 	/**
@@ -58,15 +53,8 @@ public class RulesController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value="/recomendacionConexiones", method=RequestMethod.GET)
 	public ResponseEntity<?> getRecomendaciones(
-			@RequestHeader("Authorization") String token){
-		UserSession user = userSessionRepository.findByToken(token);
-		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
-		}
-		String username = JWTFilter.getSub(token, user.getSecretKey());
-		if(!username.equalsIgnoreCase(user.getUsername()))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-		
+			HttpServletRequest request){
+		final String username = request.getAttribute("username").toString();
 		final List<RecomendacionDTO> recomendaciones = (List<RecomendacionDTO>)recomendacionesBean
 				.setDeRecomendaciones(usuarioBean.getUsuario(username));
 		if(recomendaciones.isEmpty())
@@ -84,17 +72,10 @@ public class RulesController {
 	 */
 	@RequestMapping(value="/buscarUsuario",method=RequestMethod.GET)
 	public ResponseEntity<?> buscarUsuario(
-			@RequestHeader("Authorization") String token,
+			HttpServletRequest request,
 			@RequestParam(defaultValue="NOMBRE") String filtro,
 			@RequestParam String param){
-		UserSession user = userSessionRepository.findByToken(token);
-		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
-		}
-		String username = JWTFilter.getSub(token, user.getSecretKey());
-		if(!username.equalsIgnoreCase(user.getUsername()))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-		
+		final String username = request.getAttribute("username").toString();
 		if(null == param || param.isEmpty())
 			return ResponseEntity.badRequest().body(null);
 		final List<RecomendacionDTO> busqueda = busquedaBean

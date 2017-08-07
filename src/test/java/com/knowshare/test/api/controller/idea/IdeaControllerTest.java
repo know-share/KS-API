@@ -50,13 +50,13 @@ public class IdeaControllerTest extends AbstractApiTest {
 		mockMvc.perform(post(CREAR)
 				.accept(contentType)
 				.contentType(contentType))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isUnauthorized());
 		
 		mockMvc.perform(post(CREAR)
 				.accept(contentType)
 				.content(asJsonString(idea))
 				.contentType(contentType))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isUnauthorized());
 		
 		when(userSessionRepository.findByToken(anyString()))
 			.thenReturn(null);

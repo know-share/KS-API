@@ -6,8 +6,10 @@ package com.knowshare.test.api.general;
 import java.nio.charset.Charset;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,8 +32,10 @@ import com.knowshare.dto.perfilusuario.AuthDTO;
 import com.knowshare.enterprise.repository.app.UserSessionRepository;
 import com.knowshare.entities.app.UserSession;
 
+import static org.mockito.Mockito.when;
+
 /**
- * @author miguel
+ * @author Miguel Montañez
  *
  */
 @RunWith(SpringRunner.class)
@@ -49,16 +53,22 @@ public abstract class AbstractApiTest {
 	@MockBean
 	protected UserSessionRepository userSessionRepository;
 	
+	protected HttpServletRequest request;
+	
 	protected MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
             MediaType.APPLICATION_JSON.getSubtype(),
             Charset.forName("utf8"));
 	
 	@PostConstruct
 	private void init(){
+		request = Mockito.mock(HttpServletRequest.class);
 		AuthDTO authDTO = new AuthDTO()
 				.setPassword("Password$")
 				.setUsername("username user 1");
 		userSession = JWTFilter.generateToken(authDTO);
+		
+		when(request.getAttribute("username"))
+			.thenReturn("username");
 	}
 	
 	/*

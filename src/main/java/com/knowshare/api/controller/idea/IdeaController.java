@@ -6,23 +6,21 @@ package com.knowshare.api.controller.idea;
 import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knowshare.api.security.JWTFilter;
 import com.knowshare.dto.idea.Comentario;
 import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.enterprise.bean.idea.IdeaFacade;
-import com.knowshare.enterprise.repository.app.UserSessionRepository;
-import com.knowshare.entities.app.UserSession;
 import com.knowshare.entities.idea.OperacionIdea;
 import com.knowshare.enums.TipoOperacionEnum;
 
@@ -38,21 +36,12 @@ public class IdeaController {
 	@Autowired
 	private IdeaFacade ideaBean;
 	
-	@Autowired
-	private UserSessionRepository userSessionRepository;
-	
-	
 	@RequestMapping(value="/crear" ,method = RequestMethod.POST)
 	public ResponseEntity<?> crearIdea(@RequestBody IdeaDTO idea,
-			@RequestHeader("Authorization") String token){
-		UserSession sesion = userSessionRepository.findByToken(token);
-		if(sesion == null|| !JWTFilter.validateToken(token, sesion.getSecretKey())){
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-		}
-		String username = JWTFilter.getSub(token, sesion.getSecretKey());
-		if(!username.equalsIgnoreCase(sesion.getUsername()))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-		
+			HttpServletRequest request){
+		final String username = request.getAttribute("username").toString();
+		if(idea == null)
+			return ResponseEntity.badRequest().body(null);
 		idea.setUsuario(username);
 		IdeaDTO crear = ideaBean.crearIdea(idea);
 		if(crear!= null){
@@ -63,16 +52,8 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value = "/findByUsuario/{usernameObj:.+}",method=RequestMethod.GET)
-	public ResponseEntity<?> findByUsuario(@RequestHeader("Authorization") String token,
+	public ResponseEntity<?> findByUsuario(HttpServletRequest request,
 			@PathVariable String usernameObj){
-		UserSession sesion = userSessionRepository.findByToken(token);
-		if(sesion == null || !JWTFilter.validateToken(token, sesion.getSecretKey())){
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-		}
-		String username = JWTFilter.getSub(token, sesion.getSecretKey());
-		if(!username.equalsIgnoreCase(sesion.getUsername()))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-		
 		List<IdeaDTO> ret = ideaBean.findByUsuario(usernameObj);
 		if(!ret.isEmpty()){
 			return ResponseEntity.status(HttpStatus.OK).body(ret);
@@ -106,16 +87,9 @@ public class IdeaController {
 	
 	@RequestMapping(value="/find10" ,method = RequestMethod.GET)
 	public ResponseEntity<?> find(
-			@RequestHeader("Authorization") String token){
-		UserSession user = userSessionRepository.findByToken(token);
-		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
-		}
-		String username = JWTFilter.getSub(token, user.getSecretKey());
-		if(!username.equalsIgnoreCase(user.getUsername()))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-		
-		List<IdeaDTO> ideas = ideaBean.find10(user.getUsername());
+			HttpServletRequest request){
+		final String username = request.getAttribute("username").toString();
+		List<IdeaDTO> ideas = ideaBean.find10(username);
 		if(ideas == null || ideas.isEmpty()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
@@ -123,18 +97,14 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value="/comentar" ,method = RequestMethod.POST)
-	public ResponseEntity<?> comentario(@RequestHeader("Authorization") String token,
+	public ResponseEntity<?> comentario(HttpServletRequest request,
 			@RequestBody Comentario params){
-		UserSession user = userSessionRepository.findByToken(token);
-		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false); 
-		}
-		String username = JWTFilter.getSub(token, user.getSecretKey());
-		if(!username.equalsIgnoreCase(user.getUsername()))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+		if(params == null)
+			return ResponseEntity.badRequest().body(null);
+		final String username = request.getAttribute("username").toString();
 		IdeaDTO idea = params.getIdea();
 		OperacionIdea operacion = new OperacionIdea();
-		operacion.setUsername(user.getUsername());
+		operacion.setUsername(username);
 		operacion.setFecha(new Date());
 		operacion.setContenido(params.getComentario());
 		operacion.setTipo(TipoOperacionEnum.COMENTARIO);
@@ -146,17 +116,13 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value="/light" ,method = RequestMethod.POST)
-	public ResponseEntity<?> light(@RequestHeader("Authorization") String token,
+	public ResponseEntity<?> light(HttpServletRequest request,
 			@RequestBody IdeaDTO params){
-		UserSession user = userSessionRepository.findByToken(token);
-		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false); 
-		}
-		String username = JWTFilter.getSub(token, user.getSecretKey());
-		if(!username.equalsIgnoreCase(user.getUsername()))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(false);
+		if(params == null)
+			return ResponseEntity.badRequest().body(null);
+		final String username = request.getAttribute("username").toString();
 		OperacionIdea operacion = new OperacionIdea();
-		operacion.setUsername(user.getUsername());
+		operacion.setUsername(username);
 		operacion.setFecha(new Date());
 		operacion.setContenido(null);
 		operacion.setTipo(TipoOperacionEnum.LIGHT);
@@ -170,34 +136,22 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value="/findById/{id}" ,method = RequestMethod.GET)
-	public ResponseEntity<?> findById(@RequestHeader("Authorization") String token,
+	public ResponseEntity<?> findById(HttpServletRequest request,
 			@PathVariable String id){
-		UserSession user = userSessionRepository.findByToken(token);
-		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
-		}
-		String username = JWTFilter.getSub(token, user.getSecretKey());
-		if(!username.equalsIgnoreCase(user.getUsername()))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-		IdeaDTO dto = ideaBean.findById(id, user.getUsername()) ;
+		final String username = request.getAttribute("username").toString();
+		IdeaDTO dto = ideaBean.findById(id, username) ;
 		if(dto != null){
 			return ResponseEntity.status(HttpStatus.OK).body(dto);
 		}
-		
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		
 	}
 	
 	@RequestMapping(value="/compartir" ,method = RequestMethod.POST)
-	public ResponseEntity<?> compartir(@RequestHeader("Authorization") String token,
+	public ResponseEntity<?> compartir(HttpServletRequest request,
 			@RequestBody IdeaDTO dto){
-		UserSession user = userSessionRepository.findByToken(token);
-		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
-		}
-		String username = JWTFilter.getSub(token, user.getSecretKey());
-		if(!username.equalsIgnoreCase(user.getUsername()))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		if(dto == null)
+			return ResponseEntity.badRequest().body(null);
+		final String username = request.getAttribute("username").toString();
 		IdeaDTO ret = ideaBean.compartir(dto, username);
 		if(ret != null){
 			return ResponseEntity.status(HttpStatus.OK).body(ret);

@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.hasSize;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,7 +34,7 @@ import com.knowshare.enums.TipoUsuariosEnum;
 import com.knowshare.test.api.general.AbstractApiTest;
 
 /**
- * @author miguel
+ * @author Miguel Montañez
  *
  */
 public class UsuarioControllerTest extends AbstractApiTest{
@@ -44,7 +45,7 @@ public class UsuarioControllerTest extends AbstractApiTest{
 	private UsuarioDTO usuario;
 	
 	private static final String IS_USERNAME_TAKEN = "/api/usuario/isUsernameTaken";
-	private static final String CREATE_USER = "/api/usuario";
+	private static final String CREATE_USER = "/api/usuario/";
 	private static final String GET_USER = "/api/usuario/get";
 	private static final String SEGUIR = "/api/usuario/seguir";
 	private static final String DEJAR_SEGUIR = "/api/usuario/dejarseguir";
@@ -121,7 +122,7 @@ public class UsuarioControllerTest extends AbstractApiTest{
 			.andExpect(status().isNotFound());
 		
 		mockMvc.perform(get(GET_USER+"/usersearch"))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isUnauthorized());
 		
 		mockMvc.perform(get(GET_USER+"/usersearch")
 				.header("Authorization", "bad token"))
@@ -163,7 +164,7 @@ public class UsuarioControllerTest extends AbstractApiTest{
 	@Test
 	public void seguirTest() throws Exception{
 		mockMvc.perform(put(SEGUIR+"/userToFollow"))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isUnauthorized());
 		
 		when(usuarioBean.isUsernameTaken(anyString()))
 			.thenReturn(false);
@@ -195,7 +196,7 @@ public class UsuarioControllerTest extends AbstractApiTest{
 	@Test
 	public void unfollowTest() throws Exception{
 		mockMvc.perform(put(DEJAR_SEGUIR+"/userToUnFollow"))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isUnauthorized());
 		
 		when(usuarioBean.isUsernameTaken(anyString()))
 			.thenReturn(false);
@@ -227,7 +228,7 @@ public class UsuarioControllerTest extends AbstractApiTest{
 	@Test
 	public void solicitudAmistadTest() throws Exception{
 		mockMvc.perform(put(SOLICITUD+"/targetUser"))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isUnauthorized());
 		
 		when(usuarioBean.isUsernameTaken(anyString()))
 			.thenReturn(false);
@@ -279,13 +280,13 @@ public class UsuarioControllerTest extends AbstractApiTest{
 		mockMvc.perform(post(ADD_TG)
 				.accept(contentType)
 				.contentType(contentType))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isUnauthorized());
 		
 		mockMvc.perform(post(ADD_TG)
 				.accept(contentType)
 				.contentType(contentType)
 				.content(asJsonString(tg)))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isUnauthorized());
 		
 		when(usuarioBean.agregarTGDirigido(anyObject(), anyString()))
 			.thenReturn(false);
@@ -315,13 +316,13 @@ public class UsuarioControllerTest extends AbstractApiTest{
 		mockMvc.perform(post(ADD_FA)
 				.accept(contentType)
 				.contentType(contentType))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isUnauthorized());
 		
 		mockMvc.perform(post(ADD_FA)
 				.accept(contentType)
 				.contentType(contentType)
 				.content(asJsonString(fa)))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isUnauthorized());
 		
 		when(usuarioBean.agregarFormacionAcademica(anyObject(), anyString()))
 			.thenReturn(false);
@@ -347,7 +348,7 @@ public class UsuarioControllerTest extends AbstractApiTest{
 	@Test
 	public void eliminarAmigoTest() throws Exception{
 		mockMvc.perform(put(ELIMINAR_AMIGO+"/Username"))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isUnauthorized());
 		
 		mockMvc.perform(put(ELIMINAR_AMIGO+"/Username")
 				.header("Authorization", getToken()))
