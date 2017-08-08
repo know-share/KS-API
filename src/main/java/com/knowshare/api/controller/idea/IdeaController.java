@@ -64,6 +64,19 @@ public class IdeaController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
 	}
 	
+	@RequestMapping(value = "/findByUsuarioPro/{usernameObj:.+}",method=RequestMethod.GET)
+	public ResponseEntity<?> findByUsuarioPro(
+			@PathVariable String usernameObj){
+		List<IdeaDTO> ret = ideaBean.findByUsuarioProyecto(usernameObj);
+		if(!ret.isEmpty()){
+			return ResponseEntity.status(HttpStatus.OK).body(ret);
+		}
+		if(ret.isEmpty()){
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
+	}
+	
 	@RequestMapping(value="/find10" ,method = RequestMethod.GET)
 	public ResponseEntity<?> find(
 			HttpServletRequest request){
