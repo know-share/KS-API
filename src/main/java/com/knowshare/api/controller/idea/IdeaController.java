@@ -65,16 +65,8 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value = "/findByUsuarioPro/{usernameObj:.+}",method=RequestMethod.GET)
-	public ResponseEntity<?> findByUsuarioPro(@RequestHeader("Authorization") String token,
+	public ResponseEntity<?> findByUsuarioPro(
 			@PathVariable String usernameObj){
-		UserSession sesion = userSessionRepository.findByToken(token);
-		if(sesion == null || !JWTFilter.validateToken(token, sesion.getSecretKey())){
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-		}
-		String username = JWTFilter.getSub(token, sesion.getSecretKey());
-		if(!username.equalsIgnoreCase(sesion.getUsername()))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-		
 		List<IdeaDTO> ret = ideaBean.findByUsuarioProyecto(usernameObj);
 		if(!ret.isEmpty()){
 			return ResponseEntity.status(HttpStatus.OK).body(ret);

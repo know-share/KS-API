@@ -27,6 +27,7 @@ public class ConfigInterceptors extends WebMvcConfigurerAdapter {
 		registry.addInterceptor(new SecurityInterceptor(userSession))
 			.addPathPatterns("/api/**")
 			.excludePathPatterns(
+				"/api/tg/findAll",
 				"/api/carrera/findAll",
 				"/api/carrera/getEnfasisAreaConocimiento",
 				"/api/auth/**",
