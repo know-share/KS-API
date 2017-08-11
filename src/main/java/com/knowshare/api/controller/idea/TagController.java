@@ -25,7 +25,7 @@ public class TagController {
 	private TagFacade tagBean;
 	
 	@RequestMapping(value="/findAll" ,method = RequestMethod.GET)
-	public ResponseEntity<?> findAllTags(
+	public ResponseEntity<Object> findAllTags(
 			@RequestHeader("Authorization") String token){
 		List<Tag> tags = tagBean.findAll();
 		if(tags == null || tags.isEmpty()){
@@ -35,7 +35,7 @@ public class TagController {
 	}
 	
 	@RequestMapping(value="create", method=RequestMethod.POST)
-	public ResponseEntity<?> create (@RequestBody String tag){
+	public ResponseEntity<Object> create (@RequestBody String tag){
 		if(tag != null){
 			if(tagBean.create(tag))
 				return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -46,7 +46,7 @@ public class TagController {
 	}
 	
 	@RequestMapping(value="", method=RequestMethod.PATCH)
-	public ResponseEntity<?> update (@RequestBody Tag tag){
+	public ResponseEntity<Object> update (@RequestBody Tag tag){
 		if(tag != null){
 			if(tagBean.update(tag))
 				return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -58,7 +58,7 @@ public class TagController {
 	
 
 	@RequestMapping(value="delete/{id:.+}", method=RequestMethod.DELETE)
-	public ResponseEntity<?> delete (@PathVariable String id){
+	public ResponseEntity<Object> delete (@PathVariable String id){
 		if(tagBean.delete(id)) {
 			return ResponseEntity.status(HttpStatus.OK).body(null); 
 		}

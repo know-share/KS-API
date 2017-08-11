@@ -52,7 +52,7 @@ public class RulesController {
 	 */
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value="/recomendacionConexiones", method=RequestMethod.GET)
-	public ResponseEntity<?> getRecomendaciones(
+	public ResponseEntity<Object> getRecomendaciones(
 			HttpServletRequest request){
 		final String username = request.getAttribute("username").toString();
 		final List<RecomendacionDTO> recomendaciones = (List<RecomendacionDTO>)recomendacionesBean
@@ -71,7 +71,7 @@ public class RulesController {
 	 * @return Lista con los usuarios a buscar
 	 */
 	@RequestMapping(value="/buscarUsuario",method=RequestMethod.GET)
-	public ResponseEntity<?> buscarUsuario(
+	public ResponseEntity<Object> buscarUsuario(
 			HttpServletRequest request,
 			@RequestParam(defaultValue="NOMBRE") String filtro,
 			@RequestParam String param){

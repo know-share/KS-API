@@ -36,10 +36,12 @@ public class IdeaController {
 	@Autowired
 	private IdeaFacade ideaBean;
 	
+	private static final String USERNAME = "username";
+	
 	@RequestMapping(value="/crear" ,method = RequestMethod.POST)
-	public ResponseEntity<?> crearIdea(@RequestBody IdeaDTO idea,
+	public ResponseEntity<Object> crearIdea(@RequestBody IdeaDTO idea,
 			HttpServletRequest request){
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		if(idea == null)
 			return ResponseEntity.badRequest().body(null);
 		idea.setUsuario(username);
@@ -52,7 +54,7 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value = "/findByUsuario/{usernameObj:.+}",method=RequestMethod.GET)
-	public ResponseEntity<?> findByUsuario(HttpServletRequest request,
+	public ResponseEntity<Object> findByUsuario(HttpServletRequest request,
 			@PathVariable String usernameObj){
 		List<IdeaDTO> ret = ideaBean.findByUsuario(usernameObj);
 		if(!ret.isEmpty()){
@@ -65,7 +67,7 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value = "/findByUsuarioPro/{usernameObj:.+}",method=RequestMethod.GET)
-	public ResponseEntity<?> findByUsuarioPro(
+	public ResponseEntity<Object> findByUsuarioPro(
 			@PathVariable String usernameObj){
 		List<IdeaDTO> ret = ideaBean.findByUsuarioProyecto(usernameObj);
 		if(!ret.isEmpty()){
@@ -78,9 +80,9 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value="/find10" ,method = RequestMethod.GET)
-	public ResponseEntity<?> find(
+	public ResponseEntity<Object> find(
 			HttpServletRequest request){
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		List<IdeaDTO> ideas = ideaBean.find10(username);
 		if(ideas == null || ideas.isEmpty()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
@@ -89,11 +91,11 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value="/comentar" ,method = RequestMethod.POST)
-	public ResponseEntity<?> comentario(HttpServletRequest request,
+	public ResponseEntity<Object> comentario(HttpServletRequest request,
 			@RequestBody Comentario params){
 		if(params == null)
 			return ResponseEntity.badRequest().body(null);
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		IdeaDTO idea = params.getIdea();
 		OperacionIdea operacion = new OperacionIdea();
 		operacion.setUsername(username);
@@ -108,11 +110,11 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value="/light" ,method = RequestMethod.POST)
-	public ResponseEntity<?> light(HttpServletRequest request,
+	public ResponseEntity<Object> light(HttpServletRequest request,
 			@RequestBody IdeaDTO params){
 		if(params == null)
 			return ResponseEntity.badRequest().body(null);
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		OperacionIdea operacion = new OperacionIdea();
 		operacion.setUsername(username);
 		operacion.setFecha(new Date());
@@ -128,9 +130,9 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value="/findById/{id}" ,method = RequestMethod.GET)
-	public ResponseEntity<?> findById(HttpServletRequest request,
+	public ResponseEntity<Object> findById(HttpServletRequest request,
 			@PathVariable String id){
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		IdeaDTO dto = ideaBean.findById(id, username) ;
 		if(dto != null){
 			return ResponseEntity.status(HttpStatus.OK).body(dto);
@@ -139,11 +141,11 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value="/compartir" ,method = RequestMethod.POST)
-	public ResponseEntity<?> compartir(HttpServletRequest request,
+	public ResponseEntity<Object> compartir(HttpServletRequest request,
 			@RequestBody IdeaDTO dto){
 		if(dto == null)
 			return ResponseEntity.badRequest().body(null);
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		IdeaDTO ret = ideaBean.compartir(dto, username);
 		if(ret != null){
 			return ResponseEntity.status(HttpStatus.OK).body(ret);

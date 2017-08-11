@@ -35,7 +35,9 @@ import com.nimbusds.jwt.JWTClaimsSet;
  */
 public class JWTFilter {
 	
-	private final static Logger logger = LoggerFactory.getLogger(JWTFilter.class);
+	private static final Logger logger = LoggerFactory.getLogger(JWTFilter.class);
+	
+	private JWTFilter(){}
 	
 	/**
 	 * A partir de las credenciales que ya fueron verificadas,
@@ -81,8 +83,7 @@ public class JWTFilter {
 			us.setToken(token);
 			return us;
 		} catch (Exception e) {
-			logger.error("::::: Error generating token for user: "+creds.getUsername()
-					+ " :::::");
+			logger.error("Error generating token for user: "+creds.getUsername());
 			return null;
 		}
 	}
@@ -111,10 +112,7 @@ public class JWTFilter {
 
 		// Get the plain text
 		Payload payload = jweObject.getPayload();
-		if(isExpired((Long)payload.toJSONObject().get("exp")))
-			return false;
-
-		return true;
+		return !(isExpired((Long)payload.toJSONObject().get("exp")));
 	}
 	
 	/**
@@ -163,8 +161,7 @@ public class JWTFilter {
 		// decode the base64 encoded string
 		byte[] decodedKey = Base64.decodeBase64(secretKey);
 		// rebuild key using SecretKeySpec
-		SecretKey originalKey = new SecretKeySpec(decodedKey,  "HmacSHA256"); 
-		return originalKey;
+		return new SecretKeySpec(decodedKey,  "HmacSHA256");
 	}
 
 }
