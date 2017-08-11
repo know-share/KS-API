@@ -112,7 +112,7 @@ public class JWTFilter {
 
 		// Get the plain text
 		Payload payload = jweObject.getPayload();
-		return (isExpired((Long)payload.toJSONObject().get("exp")));
+		return !(isExpired((Long)payload.toJSONObject().get("exp")));
 	}
 	
 	/**

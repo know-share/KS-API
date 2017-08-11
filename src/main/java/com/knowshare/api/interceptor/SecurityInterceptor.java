@@ -42,7 +42,7 @@ public class SecurityInterceptor extends HandlerInterceptorAdapter{
 				response.sendError(401);
 				return false;
 			}
-			logger.info("Path: %s validando token %s",request.getServletPath(),token);
+			logger.info("Path: {} validando token {}",request.getServletPath(),token);
 			UserSession user = userSessionRepository.findByToken(token);
 			if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
 				response.sendError(401);
