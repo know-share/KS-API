@@ -3,9 +3,13 @@
  */
 package com.knowshare.test.api.controller.academia;
 
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,7 +30,7 @@ import com.knowshare.enterprise.bean.carrera.CarreraFacade;
 import com.knowshare.test.api.general.AbstractApiTest;
 
 /**
- * @author miguel
+ * @author Miguel Montañez
  *
  */
 public class CarreraControllerTest extends AbstractApiTest{
@@ -40,6 +44,10 @@ public class CarreraControllerTest extends AbstractApiTest{
 	
 	private final static String FIND_ALL = "/api/carrera/findAll";
 	private final static String GET_ENFASIS_AC = "/api/carrera/getEnfasisAreaConocimiento";
+	private final static String UPDATE = "/api/carrera";
+	private final static String DELETE = "/api/carrera/delete/";
+	private final static String CREATE = "/api/carrera/create";
+	
 	
 	@Before
 	public void setup(){
@@ -112,5 +120,107 @@ public class CarreraControllerTest extends AbstractApiTest{
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("enfasis", hasSize(4)))
 			.andExpect(jsonPath("areaConocimiento", hasSize(3)));
+	}
+	
+	@Test
+	public void createTest() throws Exception{
+		mockMvc.perform(post(CREATE)
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(post(CREATE)
+				.header("Authorization", "bad token")
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString())).thenReturn(userSession);
+		mockMvc.perform(post(CREATE)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isBadRequest());
+		
+		when(carreraBean.create(anyObject()))
+			.thenReturn(false);
+		mockMvc.perform(post(CREATE)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new CarreraDTO())))
+			.andExpect(status().isNoContent());
+		
+		when(carreraBean.create(anyObject()))
+			.thenReturn(true);
+		mockMvc.perform(post(CREATE)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new CarreraDTO())))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void deleteTest() throws Exception{
+		mockMvc.perform(delete(DELETE))
+			.andExpect(status().isNotFound());
+		
+		mockMvc.perform(delete(DELETE+"anyId")
+				.header("Authorization", "any token"))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString())).thenReturn(userSession);
+		when(carreraBean.delete(anyString()))
+			.thenReturn(false);
+		mockMvc.perform(delete(DELETE+"anyId")
+				.header("Authorization", getToken()))
+			.andExpect(status().isNotModified());
+		
+		when(carreraBean.delete(anyString()))
+			.thenReturn(true);
+		mockMvc.perform(delete(DELETE+"anyId")
+				.header("Authorization", getToken()))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void updateTest() throws Exception{
+		mockMvc.perform(patch(UPDATE)
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(patch(UPDATE)
+				.header("Authorization","bad token")
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		mockMvc.perform(patch(UPDATE)
+				.header("Authorization",getToken())
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isBadRequest());
+		
+		when(carreraBean.update(anyObject()))
+			.thenReturn(false);
+		mockMvc.perform(patch(UPDATE)
+				.header("Authorization",getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new CarreraDTO())))
+			.andExpect(status().isNoContent());
+		
+		when(carreraBean.update(anyObject()))
+			.thenReturn(true);
+		mockMvc.perform(patch(UPDATE)
+				.header("Authorization",getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new CarreraDTO())))
+			.andExpect(status().isOk());
 	}
 }

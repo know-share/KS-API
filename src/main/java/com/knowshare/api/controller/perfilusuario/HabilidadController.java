@@ -85,7 +85,7 @@ public class HabilidadController {
 	}
 	
 	@RequestMapping(value="", method=RequestMethod.PATCH)
-	public ResponseEntity<?> update (@RequestBody HabilidadDTO habilidad){
+	public ResponseEntity<Object> update (@RequestBody HabilidadDTO habilidad){
 		if(habilidad != null){
 			if(habilidadBean.update(habilidad))
 				return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -97,7 +97,7 @@ public class HabilidadController {
 	
 
 	@RequestMapping(value="delete/{id:.+}", method=RequestMethod.DELETE)
-	public ResponseEntity<?> delete (@PathVariable String id){
+	public ResponseEntity<Object> delete (@PathVariable String id){
 		if(habilidadBean.delete(id)) {
 			return ResponseEntity.status(HttpStatus.OK).body(null); 
 		}
@@ -106,7 +106,7 @@ public class HabilidadController {
 	
 	
 	@RequestMapping(value="create", method=RequestMethod.POST)
-	public ResponseEntity<?> create (@RequestBody HabilidadDTO habilidad){
+	public ResponseEntity<Object> create (@RequestBody HabilidadDTO habilidad){
 		if(habilidad != null){
 			if(habilidadBean.create(habilidad))
 				return ResponseEntity.status(HttpStatus.OK).body(null);

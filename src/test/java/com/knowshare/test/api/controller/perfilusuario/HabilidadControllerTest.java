@@ -3,9 +3,13 @@
  */
 package com.knowshare.test.api.controller.perfilusuario;
 
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,6 +44,10 @@ public class HabilidadControllerTest extends AbstractApiTest{
 	
 	private static final String FIND_HABILIDADES = "/api/habilidad/getHabilidades";
 	private static final String FIND_HAB_PROFESIONALES = "/api/habilidad/getHabilidadesProfesionales";
+	private static final String FIND_ALL = "/api/habilidad/getAll";
+	private static final String CREATE = "/api/habilidad/create";
+	private static final String UPDATE = "/api/habilidad/";
+	private static final String DELETE = "/api/habilidad/delete/";
 	
 	@Before
 	public void setup(){
@@ -117,5 +125,139 @@ public class HabilidadControllerTest extends AbstractApiTest{
 			.andExpect(jsonPath("$[1].tipo", is(TipoHabilidadEnum.PROFESIONALES.toString())))
 			.andExpect(jsonPath("$[1].carrera",is("carrera 2")));
 	}
+	
+	@Test
+	public void getAllTest() throws Exception{
+		when(habilidadBean.getAll())
+			.thenReturn(null);
+		mockMvc.perform(get(FIND_ALL))
+			.andExpect(status().isNoContent());
+		
+		when(habilidadBean.getAll())
+			.thenReturn(new ArrayList<>());
+		mockMvc.perform(get(FIND_ALL))
+			.andExpect(status().isNoContent());
+		
+		when(habilidadBean.getAll())
+			.thenReturn(habilidades);
+		mockMvc.perform(get(FIND_ALL))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(contentType))
+			.andExpect(jsonPath("$", hasSize(2)))
+			.andExpect(jsonPath("$[0].id").isNotEmpty())
+			.andExpect(jsonPath("$[0].nombre", is("habilidad 1")))
+			.andExpect(jsonPath("$[0].tipo", is(TipoHabilidadEnum.PERSONALES.toString())))
+			.andExpect(jsonPath("$[0].carrera").isEmpty())
+			.andExpect(jsonPath("$[1].id").isNotEmpty())
+			.andExpect(jsonPath("$[1].nombre", is("habilidad 2")))
+			.andExpect(jsonPath("$[1].tipo", is(TipoHabilidadEnum.PROFESIONALES.toString())))
+			.andExpect(jsonPath("$[1].carrera",is("carrera 2")));
+	}
+	
+	@Test
+	public void updateTest() throws Exception{
+		mockMvc.perform(patch(UPDATE)
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(patch(UPDATE)
+				.header("Authorization", "bad token")
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		mockMvc.perform(patch(UPDATE)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isBadRequest());
+		
+		when(habilidadBean.update(anyObject()))
+			.thenReturn(false);
+		mockMvc.perform(patch(UPDATE)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new HabilidadDTO())))
+			.andExpect(status().isNoContent());
+		
+		when(habilidadBean.update(anyObject()))
+			.thenReturn(true);
+		mockMvc.perform(patch(UPDATE)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new HabilidadDTO())))
+			.andExpect(status().isOk());
+	}
 
+	@Test
+	public void deleteTest() throws Exception{
+		mockMvc.perform(delete(DELETE))
+			.andExpect(status().isNotFound());
+		
+		mockMvc.perform(delete(DELETE+"id"))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(delete(DELETE+"id")
+				.header("Authorization", "bad token"))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		when(habilidadBean.delete(anyString()))
+			.thenReturn(false);
+		mockMvc.perform(delete(DELETE+"id")
+				.header("Authorization", getToken()))
+			.andExpect(status().isNotModified());
+		
+		when(habilidadBean.delete(anyString()))
+			.thenReturn(true);
+		mockMvc.perform(delete(DELETE+"id")
+				.header("Authorization", getToken()))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void createTest() throws Exception{
+		mockMvc.perform(post(CREATE)
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(post(CREATE)
+				.header("Authorization", "bad token")
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		mockMvc.perform(post(CREATE)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isBadRequest());
+		
+		when(habilidadBean.create(anyObject()))
+			.thenReturn(false);
+		mockMvc.perform(post(CREATE)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new HabilidadDTO())))
+			.andExpect(status().isNoContent());
+		
+		when(habilidadBean.create(anyObject()))
+			.thenReturn(true);
+		mockMvc.perform(post(CREATE)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new HabilidadDTO())))
+			.andExpect(status().isOk());
+	}
 }

@@ -57,10 +57,10 @@ public class IdeaController {
 	public ResponseEntity<Object> findByUsuario(HttpServletRequest request,
 			@PathVariable String usernameObj){
 		List<IdeaDTO> ret = ideaBean.findByUsuario(usernameObj);
-		if(!ret.isEmpty()){
+		if(null != ret && !ret.isEmpty()){
 			return ResponseEntity.status(HttpStatus.OK).body(ret);
 		}
-		if(ret.isEmpty()){
+		if(null != ret && ret.isEmpty()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
@@ -70,15 +70,20 @@ public class IdeaController {
 	public ResponseEntity<Object> findByUsuarioPro(
 			@PathVariable String usernameObj){
 		List<IdeaDTO> ret = ideaBean.findByUsuarioProyecto(usernameObj);
-		if(!ret.isEmpty()){
+		if(ret !=null && !ret.isEmpty()){
 			return ResponseEntity.status(HttpStatus.OK).body(ret);
 		}
-		if(ret.isEmpty()){
+		if(ret !=null && ret.isEmpty()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
 	}
 	
+	/**
+	 * Debe ser renombrado el endpoint
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value="/find10" ,method = RequestMethod.GET)
 	public ResponseEntity<Object> find(
 			HttpServletRequest request){
@@ -152,6 +157,5 @@ public class IdeaController {
 		}
 		
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-		
 	}
 }

@@ -16,6 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.knowshare.enterprise.bean.tag.TagFacade;
 import com.knowshare.entities.idea.Tag;
 
+/**
+ * 
+ * @author Miguel Montañez
+ *
+ */
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/tag")

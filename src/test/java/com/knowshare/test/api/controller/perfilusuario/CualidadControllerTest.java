@@ -27,7 +27,7 @@ import com.knowshare.enums.TipoCualidadEnum;
 import com.knowshare.test.api.general.AbstractApiTest;
 
 /**
- * @author miguel
+ * @author Miguel Montañez
  *
  */
 public class CualidadControllerTest extends AbstractApiTest{

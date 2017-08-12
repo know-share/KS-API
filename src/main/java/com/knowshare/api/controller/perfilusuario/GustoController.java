@@ -17,7 +17,7 @@ import com.knowshare.enterprise.bean.gusto.GustoFacade;
 import com.knowshare.entities.perfilusuario.Gusto;
 
 /**
- * @author miguel
+ * @author Miguel Montañez
  *
  */
 @RestController

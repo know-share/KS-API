@@ -57,7 +57,7 @@ public class RulesController {
 		final String username = request.getAttribute("username").toString();
 		final List<RecomendacionDTO> recomendaciones = (List<RecomendacionDTO>)recomendacionesBean
 				.setDeRecomendaciones(usuarioBean.getUsuario(username));
-		if(recomendaciones.isEmpty())
+		if(recomendaciones == null || recomendaciones.isEmpty())
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		return ResponseEntity.ok(recomendaciones);
 	}

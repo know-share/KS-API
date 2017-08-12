@@ -75,6 +75,13 @@ public class AuthControllerTest extends AbstractApiTest {
 				.accept(contentType)
 				.header("Authorization", "This token doesnt matter"))
 			.andExpect(status().isOk());
+		
+		when(userSessionRepository.removeByToken(anyString()))
+			.thenReturn(0L);
+		mockMvc.perform(put(LOGOUT)
+				.accept(contentType)
+				.header("Authorization", "This token doesnt matter"))
+			.andExpect(status().isNotModified());
 	}
 
 }
