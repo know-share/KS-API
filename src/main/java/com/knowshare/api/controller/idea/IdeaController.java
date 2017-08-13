@@ -3,6 +3,7 @@
  */
 package com.knowshare.api.controller.idea;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -151,5 +152,15 @@ public class IdeaController {
 		
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		
+	}
+	
+	@RequestMapping(value="/findOperacion/{id}/{tipo}" ,method = RequestMethod.GET)
+	public ResponseEntity<?> findByOperaciones(HttpServletRequest request,
+			@PathVariable String id, @PathVariable String tipo){
+		List<OperacionIdea> op = ideaBean.findOpreaciones(id, tipo);
+		if(!op.isEmpty()){
+			return ResponseEntity.status(HttpStatus.OK).body(op);
+		}
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 }
