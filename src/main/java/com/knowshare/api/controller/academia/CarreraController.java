@@ -35,7 +35,7 @@ public class CarreraController{
 	
 	/**
 	 * Descripción: busca todas las Carreras y las retorna.
-	 * @return OK si se logro todo con éxito, NO_CONTENT si no se encontro nada en el servidor.
+	 * @return OK si se logro con exito, NO_CONTENT si no se encontro nada en el servidor.
 	 */
 	@RequestMapping(value="/findAll", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<List<CarreraDTO>> getAllCarreras(){
@@ -48,7 +48,7 @@ public class CarreraController{
 	}
 	
 	/**
-	 * Descripción:              // MIGUEL
+	 * Descripción:
 	 * @param carrera
 	 * @return
 	 */
@@ -73,7 +73,7 @@ public class CarreraController{
 	 * BAD_REQUEST si hubo una falla en sintaxis. 
 	 */
 	@RequestMapping(value="", method=RequestMethod.PATCH)
-	public ResponseEntity<?> update (@RequestBody CarreraDTO carrera){
+	public ResponseEntity<Object> update (@RequestBody CarreraDTO carrera){
 		if(carrera != null){
 			if(carreraBean.update(carrera))
 				return ResponseEntity.status(HttpStatus.OK).body(null);
@@ -89,7 +89,7 @@ public class CarreraController{
 	 * @return Ok si elimina con éxito, NOT_MODIFIED si hubo algún error en el proceso de eliminar. 
 	 */
 	@RequestMapping(value="delete/{id:.+}", method=RequestMethod.DELETE)
-	public ResponseEntity<?> delete (@PathVariable String id){
+	public ResponseEntity<Object> delete (@PathVariable String id){
 		if(carreraBean.delete(id)) {
 			return ResponseEntity.status(HttpStatus.OK).body(null); 
 		}
@@ -103,7 +103,7 @@ public class CarreraController{
 	 * BAD_REQUEST si hubo una falla en sintaxis.
 	 */
 	@RequestMapping(value="create", method=RequestMethod.POST)
-	public ResponseEntity<?> create (@RequestBody CarreraDTO carrera){
+	public ResponseEntity<Object> create (@RequestBody CarreraDTO carrera){
 		if(carrera != null){
 			if(carreraBean.create(carrera))
 				return ResponseEntity.status(HttpStatus.OK).body(null);

@@ -44,31 +44,29 @@ public class AuthController {
 	private UserSessionRepository userSessionRepository;
 	
 	@RequestMapping(value="/login", method=RequestMethod.POST)
-	public ResponseEntity<?> login(@RequestBody AuthDTO dto) throws Exception{
+	public ResponseEntity<Object> login(@RequestBody AuthDTO dto) throws Exception{
 		logger.debug(":::: Start method login() in authController ::::");
-		if(dto != null){
-			if(dto.getUsername() != null && dto.getPassword()!=null){
-				Usuario usuario = usuarioBean.login(dto.getUsername(), dto.getPassword()); 
-				if(null != usuario){
-					dto.setUsername(usuario.getUsername());
-					UserSession us = JWTFilter.generateToken(dto);
-					if(null == us)
-						return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-								.body(null);
-					userSessionRepository.insert(us);
-					Map<String, String> map = new HashMap<>();
-					map.put("token", us.getToken());
-					map.put("role", usuario.getTipo().name());
-					return ResponseEntity.status(HttpStatus.OK).body(map);
-				}
-				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		if(dto != null && ( dto.getUsername() != null && dto.getPassword()!=null )){
+			Usuario usuario = usuarioBean.login(dto.getUsername(), dto.getPassword()); 
+			if(null != usuario){
+				dto.setUsername(usuario.getUsername());
+				UserSession us = JWTFilter.generateToken(dto);
+				if(null == us)
+					return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+							.body(null);
+				userSessionRepository.insert(us);
+				Map<String, String> map = new HashMap<>();
+				map.put("token", us.getToken());
+				map.put("role", usuario.getTipo().name());
+				return ResponseEntity.status(HttpStatus.OK).body(map);
 			}
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
 	
 	@RequestMapping(value="logout", method=RequestMethod.PUT)
-	public ResponseEntity<?> logout(
+	public ResponseEntity<Object> logout(
 			@RequestHeader("Authorization") String token){
 		// remove token from db
 		Long number = userSessionRepository.removeByToken(token);

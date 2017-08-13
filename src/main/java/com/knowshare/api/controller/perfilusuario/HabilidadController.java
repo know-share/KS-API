@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.knowshare.dto.perfilusuario.HabilidadDTO;
 import com.knowshare.enterprise.bean.habilidad.HabilidadFacade;
 import com.knowshare.entities.perfilusuario.Habilidad;
+
 
 /**
  * @author Miguel Montañez
@@ -69,5 +72,47 @@ public class HabilidadController {
 	public Page<Habilidad> findAll(
 			@RequestParam(defaultValue="0") Integer page){
 		return habilidadBean.getAll(page);
+	}
+	
+	@RequestMapping(value="/getAll", method=RequestMethod.GET, produces="application/json")
+	public ResponseEntity<List<HabilidadDTO>> getAll(){
+		List<HabilidadDTO> habilidades = habilidadBean.getAll();
+		if(habilidades == null || habilidades.isEmpty())
+			return ResponseEntity.status(HttpStatus.NO_CONTENT)
+			.body(null);
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(habilidades);
+	}
+	
+	@RequestMapping(value="", method=RequestMethod.PATCH)
+	public ResponseEntity<Object> update (@RequestBody HabilidadDTO habilidad){
+		if(habilidad != null){
+			if(habilidadBean.update(habilidad))
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			else
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+	}
+	
+
+	@RequestMapping(value="delete/{id:.+}", method=RequestMethod.DELETE)
+	public ResponseEntity<Object> delete (@PathVariable String id){
+		if(habilidadBean.delete(id)) {
+			return ResponseEntity.status(HttpStatus.OK).body(null); 
+		}
+		return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+	}
+	
+	
+	@RequestMapping(value="create", method=RequestMethod.POST)
+	public ResponseEntity<Object> create (@RequestBody HabilidadDTO habilidad){
+		if(habilidad != null){
+			if(habilidadBean.create(habilidad))
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			else
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
 }

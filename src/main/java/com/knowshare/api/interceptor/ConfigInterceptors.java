@@ -35,6 +35,7 @@ public class ConfigInterceptors extends WebMvcConfigurerAdapter {
 				"/api/gusto/findAll",
 				"/api/habilidad/getHabilidades",
 				"/api/habilidad/getHabilidadesProfesionales",
+				"/api/habilidad/getAll",
 				"/api/personalidad/**",
 				"/api/usuario/isUsernameTaken",
 				"/api/usuario/isCorreoTaken",

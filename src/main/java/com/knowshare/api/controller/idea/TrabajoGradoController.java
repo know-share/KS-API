@@ -18,7 +18,7 @@ import com.knowshare.entities.academia.TrabajoGrado;
 
 
 /**
- * @author Pablo
+ * @author Pablo Gaitan
  *
  */
 
@@ -31,7 +31,7 @@ public class TrabajoGradoController {
 	private TrabajoGradoFacade tgBean;
 	
 	@RequestMapping(value="/findAll" ,method = RequestMethod.GET)
-	public ResponseEntity<?> findAllTg(){
+	public ResponseEntity<Object> findAllTg(){
 		List<TrabajoGrado> tgs = tgBean.findAll();
 		if(tgs == null || tgs.isEmpty()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);

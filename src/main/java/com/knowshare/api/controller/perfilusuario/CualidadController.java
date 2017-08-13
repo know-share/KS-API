@@ -19,7 +19,7 @@ import com.knowshare.dto.perfilusuario.CualidadDTO;
 import com.knowshare.enterprise.bean.cualidad.CualidadFacade;
 
 /**
- * @author miguel
+ * @author Miguel Montañez
  *
  */
 @RestController

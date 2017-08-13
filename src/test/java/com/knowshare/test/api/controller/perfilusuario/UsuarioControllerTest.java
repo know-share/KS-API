@@ -8,7 +8,9 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -18,18 +20,22 @@ import static org.hamcrest.Matchers.hasSize;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mock.web.MockMultipartFile;
 
 import com.knowshare.dto.academia.CarreraDTO;
+import com.knowshare.dto.perfilusuario.ImagenDTO;
 import com.knowshare.dto.perfilusuario.UsuarioDTO;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
 import com.knowshare.entities.academia.FormacionAcademica;
 import com.knowshare.entities.academia.TrabajoGrado;
 import com.knowshare.entities.perfilusuario.Personalidad;
 import com.knowshare.enums.PreferenciaIdeaEnum;
+import com.knowshare.enums.TipoImagenEnum;
 import com.knowshare.enums.TipoUsuariosEnum;
 import com.knowshare.test.api.general.AbstractApiTest;
 
@@ -53,6 +59,12 @@ public class UsuarioControllerTest extends AbstractApiTest{
 	private static final String ADD_TG = "/api/usuario/addTG";
 	private static final String ADD_FA = "/api/usuario/addFormacionAcademica";
 	private static final String ELIMINAR_AMIGO = "/api/usuario/eliminarAmigo";
+	private static final String IS_CORREO_TAKEN = "/api/usuario/isCorreoTaken";
+	private static final String UPDATE_INFO_ACADEMICA = "/api/usuario/actualizarInfoAcademica";
+	private static final String UPDATE_INFO_BASIS = "/api/usuario/actualizarBasis";
+	private static final String UPDATE_HABILIDAD_CUALIDAD = "/api/usuario/actualizarHabilidadCualidad";
+	private static final String UPLOAD = "/api/usuario/upload";
+	private static final String GET_IMAGE = "/api/usuario/image/";
 	
 	@Before
 	public void setup(){
@@ -367,5 +379,202 @@ public class UsuarioControllerTest extends AbstractApiTest{
 		mockMvc.perform(put(ELIMINAR_AMIGO+"/Username")
 				.header("Authorization", getToken()))
 			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void isCorreoTakenTest() throws Exception{
+		mockMvc.perform(get(IS_CORREO_TAKEN))
+			.andExpect(status().isBadRequest());
+		
+		when(usuarioBean.isCorreoTaken(anyString()))
+			.thenReturn(true);
+		mockMvc.perform(get(IS_USERNAME_TAKEN+"?username=AnyUsername"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(contentType))
+			.andExpect(jsonPath("$").isBoolean());
+	}
+	
+	@Test
+	public void actualizarInfoAcademicaTest() throws Exception{
+		mockMvc.perform(patch(UPDATE_INFO_ACADEMICA)
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(patch(UPDATE_INFO_ACADEMICA)
+				.header("Authorization", "bad token")
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		mockMvc.perform(patch(UPDATE_INFO_ACADEMICA)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isBadRequest());
+		
+		when(usuarioBean.actualizarInfoAcademica(anyObject()))
+			.thenReturn(false);
+		mockMvc.perform(patch(UPDATE_INFO_ACADEMICA)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new UsuarioDTO())))
+			.andExpect(status().isInternalServerError());
+		
+		when(usuarioBean.actualizarInfoAcademica(anyObject()))
+			.thenReturn(true);
+		mockMvc.perform(patch(UPDATE_INFO_ACADEMICA)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new UsuarioDTO())))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void actualizarHabilidadCualidadTest() throws Exception{
+		mockMvc.perform(patch(UPDATE_HABILIDAD_CUALIDAD)
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(patch(UPDATE_HABILIDAD_CUALIDAD)
+				.header("Authorization", "bad token")
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		mockMvc.perform(patch(UPDATE_HABILIDAD_CUALIDAD)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isBadRequest());
+		
+		when(usuarioBean.actualizarHabilidadCualidad(anyObject()))
+			.thenReturn(false);
+		mockMvc.perform(patch(UPDATE_HABILIDAD_CUALIDAD)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new UsuarioDTO())))
+			.andExpect(status().isInternalServerError());
+		
+		when(usuarioBean.actualizarHabilidadCualidad(anyObject()))
+			.thenReturn(true);
+		mockMvc.perform(patch(UPDATE_HABILIDAD_CUALIDAD)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new UsuarioDTO())))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void actualizarBasisTest() throws Exception{
+		mockMvc.perform(patch(UPDATE_INFO_BASIS)
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(patch(UPDATE_INFO_BASIS)
+				.header("Authorization", "bad token")
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		mockMvc.perform(patch(UPDATE_INFO_BASIS)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isBadRequest());
+		
+		when(usuarioBean.actualizarBasis(anyObject()))
+			.thenReturn(false);
+		mockMvc.perform(patch(UPDATE_INFO_BASIS)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new UsuarioDTO())))
+			.andExpect(status().isInternalServerError());
+		
+		when(usuarioBean.actualizarBasis(anyObject()))
+			.thenReturn(true);
+		mockMvc.perform(patch(UPDATE_INFO_BASIS)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new UsuarioDTO())))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void uploadImageTest() throws Exception{
+		final MockMultipartFile image = new MockMultipartFile("file", "picture.png", "image/png", bytesImage());
+		mockMvc.perform(fileUpload(UPLOAD))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(fileUpload(UPLOAD)
+				.header("Authorization", "bad token"))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		mockMvc.perform(fileUpload(UPLOAD)
+				.header("Authorization", getToken()))
+			.andExpect(status().isBadRequest());
+		
+		when(usuarioBean.uploadImage(anyString(), anyObject()))
+			.thenReturn(false);
+		mockMvc.perform(fileUpload(UPLOAD)
+				.file(image)
+				.header("Authorization", getToken()))
+			.andExpect(status().isBadRequest());
+		
+		when(usuarioBean.uploadImage(anyString(), anyObject()))
+			.thenReturn(true);
+		mockMvc.perform(fileUpload(UPLOAD)
+				.file(image)
+				.header("Authorization", getToken()))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void getImage() throws Exception{
+		final ImagenDTO image = new ImagenDTO()
+				.setResult(false)
+				.setType(TipoImagenEnum.PNG)
+				.setBytes(bytesImage());
+		mockMvc.perform(get(GET_IMAGE))
+			.andExpect(status().isNotFound());
+		
+		when(usuarioBean.getImage(anyString()))
+			.thenReturn(image);
+		mockMvc.perform(get(GET_IMAGE+"username"))
+			.andExpect(status().isNotFound());
+		
+		when(usuarioBean.getImage(anyString()))
+			.thenReturn(image.setResult(true));
+		mockMvc.perform(get(GET_IMAGE+"username"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType("image/png"));
+		
+		when(usuarioBean.getImage(anyString()))
+			.thenReturn(image.setType(TipoImagenEnum.JPEG));
+		mockMvc.perform(get(GET_IMAGE+"username"))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType("image/jpeg"));
+	}
+	
+	private byte[] bytesImage(){
+		byte[] b = new byte[20];
+		new Random().nextBytes(b);
+		return b;
 	}
 }
