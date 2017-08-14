@@ -85,8 +85,16 @@ public class RulesController {
 		return ResponseEntity.ok(busqueda);
 	}
 	
-	@RequestMapping(value="/update", method=RequestMethod.GET)
-	public void updateRules(){
-		rulesAdminBean.updateRules();
+	/**
+	 * Se encarga de actualizar en tiempo de ejecución las reglas
+	 * que están en el motor.
+	 * @return verdadero si pudo llevar a cabo la actualización,
+	 * de lo contrario falso.
+	 */
+	@RequestMapping(value="/update", method=RequestMethod.PUT)
+	public ResponseEntity<Object> updateRules(){
+		if(rulesAdminBean.updateRules())
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 }

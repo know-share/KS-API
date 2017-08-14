@@ -160,12 +160,12 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value="/findOperacion/{id}/{tipo}" ,method = RequestMethod.GET)
-	public ResponseEntity<?> findByOperaciones(HttpServletRequest request,
+	public ResponseEntity<Object> findByOperaciones(HttpServletRequest request,
 			@PathVariable String id, @PathVariable String tipo){
 		List<OperacionIdea> op = ideaBean.findOpreaciones(id, tipo);
 		if(!op.isEmpty()){
 			return ResponseEntity.status(HttpStatus.OK).body(op);
 		}
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}
 }

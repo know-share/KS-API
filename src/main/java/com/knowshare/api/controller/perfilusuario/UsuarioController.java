@@ -28,6 +28,7 @@ import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
 import com.knowshare.entities.academia.FormacionAcademica;
 import com.knowshare.entities.academia.TrabajoGrado;
 import com.knowshare.entities.perfilusuario.Usuario;
+import com.knowshare.enums.PreferenciaIdeaEnum;
 import com.knowshare.enums.TipoImagenEnum;
 
 /**
@@ -298,5 +299,18 @@ public class UsuarioController {
 		    return new ResponseEntity<>(image.getBytes(), headers, HttpStatus.OK);
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	}
+	
+	@RequestMapping(value="preferenciaIdea", method=RequestMethod.PATCH)
+	public ResponseEntity<Object> updatePreferencia(
+			HttpServletRequest request,
+			@RequestBody String preferencia){
+		final String username = request.getAttribute(USERNAME).toString();
+		if(preferencia != null){
+			if(this.usuarioBean.updatePreferenciaIdea(username, PreferenciaIdeaEnum.valueOf(preferencia)))
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
 }
