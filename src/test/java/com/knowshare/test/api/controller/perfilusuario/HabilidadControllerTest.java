@@ -6,7 +6,6 @@ package com.knowshare.test.api.controller.perfilusuario;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,7 +31,7 @@ import com.knowshare.enums.TipoHabilidadEnum;
 import com.knowshare.test.api.general.AbstractApiTest;
 
 /**
- * @author miguel
+ * @author Miguel Montañez
  *
  */
 public class HabilidadControllerTest extends AbstractApiTest{
@@ -196,28 +195,41 @@ public class HabilidadControllerTest extends AbstractApiTest{
 
 	@Test
 	public void deleteTest() throws Exception{
-		mockMvc.perform(delete(DELETE))
-			.andExpect(status().isNotFound());
-		
-		mockMvc.perform(delete(DELETE+"id"))
+		mockMvc.perform(post(DELETE)
+				.accept(contentType)
+				.contentType(contentType))
 			.andExpect(status().isUnauthorized());
 		
-		mockMvc.perform(delete(DELETE+"id")
-				.header("Authorization", "bad token"))
+		mockMvc.perform(post(DELETE)
+				.header("Authorization", "bad token")
+				.accept(contentType)
+				.contentType(contentType))
 			.andExpect(status().isUnauthorized());
 		
 		when(userSessionRepository.findByToken(anyString()))
 			.thenReturn(userSession);
-		when(habilidadBean.delete(anyString()))
+		when(habilidadBean.delete(anyObject()))
 			.thenReturn(false);
-		mockMvc.perform(delete(DELETE+"id")
-				.header("Authorization", getToken()))
-			.andExpect(status().isNotModified());
+		mockMvc.perform(post(DELETE)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType))
+			.andExpect(status().isBadRequest());
 		
-		when(habilidadBean.delete(anyString()))
+		mockMvc.perform(post(DELETE)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new ObjectId())))
+			.andExpect(status().isNoContent());
+		
+		when(habilidadBean.delete(anyObject()))
 			.thenReturn(true);
-		mockMvc.perform(delete(DELETE+"id")
-				.header("Authorization", getToken()))
+		mockMvc.perform(post(DELETE)
+				.header("Authorization", getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new ObjectId())))
 			.andExpect(status().isOk());
 	}
 	

@@ -3,7 +3,6 @@
  */
 package com.knowshare.api.controller.idea;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

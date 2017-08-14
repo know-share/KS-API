@@ -19,7 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import com.knowshare.enterprise.bean.trabajoGrado.TrabajoGradoFacade;
+import com.knowshare.enterprise.bean.trabajogrado.TrabajoGradoFacade;
 import com.knowshare.entities.academia.TrabajoGrado;
 import com.knowshare.test.api.general.AbstractApiTest;
 

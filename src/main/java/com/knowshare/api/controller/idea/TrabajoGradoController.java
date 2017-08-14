@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knowshare.enterprise.bean.trabajoGrado.TrabajoGradoFacade;
+import com.knowshare.enterprise.bean.trabajogrado.TrabajoGradoFacade;
 import com.knowshare.entities.academia.TrabajoGrado;
 
 
