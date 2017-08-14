@@ -17,27 +17,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.knowshare.api.controller.academia.CarreraController;
-import com.knowshare.api.controller.access.AuthController;
-import com.knowshare.api.controller.idea.IdeaController;
-import com.knowshare.api.controller.perfilusuario.CualidadController;
-import com.knowshare.api.controller.perfilusuario.GustoController;
-import com.knowshare.api.controller.perfilusuario.HabilidadController;
-import com.knowshare.api.controller.perfilusuario.PersonalidadController;
-import com.knowshare.api.controller.perfilusuario.UsuarioController;
 import com.knowshare.api.security.JWTFilter;
 import com.knowshare.dto.perfilusuario.AuthDTO;
 import com.knowshare.enterprise.repository.app.UserSessionRepository;
 import com.knowshare.entities.app.UserSession;
 
 /**
- * @author miguel
+ * @author Miguel Montañez
  *
  */
 @RunWith(SpringRunner.class)
-@WebMvcTest(controllers={CarreraController.class, CualidadController.class, GustoController.class,
-		HabilidadController.class, PersonalidadController.class, UsuarioController.class, AuthController.class,
-		IdeaController.class})
+@WebMvcTest
 @ContextConfiguration(classes={ConfigApiContext.class})
 public abstract class AbstractApiTest {
 

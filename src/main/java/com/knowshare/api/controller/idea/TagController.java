@@ -6,17 +6,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knowshare.api.security.JWTFilter;
 import com.knowshare.enterprise.bean.tag.TagFacade;
-import com.knowshare.enterprise.repository.app.UserSessionRepository;
-import com.knowshare.entities.app.UserSession;
 import com.knowshare.entities.idea.Tag;
 
+/**
+ * 
+ * @author Miguel Montañez
+ *
+ */
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/tag")
@@ -25,24 +29,44 @@ public class TagController {
 	@Autowired
 	private TagFacade tagBean;
 	
-	@Autowired
-	private UserSessionRepository userSessionRepository;
-	
 	@RequestMapping(value="/findAll" ,method = RequestMethod.GET)
-	public ResponseEntity<?> findAllTags(
+	public ResponseEntity<Object> findAllTags(
 			@RequestHeader("Authorization") String token){
-		UserSession user = userSessionRepository.findByToken(token);
-		if(null == user || !JWTFilter.validateToken(token, user.getSecretKey())){
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); 
-		}
-		String username = JWTFilter.getSub(token, user.getSecretKey());
-		if(!username.equalsIgnoreCase(user.getUsername()))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-		
 		List<Tag> tags = tagBean.findAll();
 		if(tags == null || tags.isEmpty()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(tags);
+	}
+	
+	@RequestMapping(value="create", method=RequestMethod.POST)
+	public ResponseEntity<Object> create (@RequestBody String tag){
+		if(tag != null){
+			if(tagBean.create(tag))
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			else
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+	}
+	
+	@RequestMapping(value="", method=RequestMethod.PATCH)
+	public ResponseEntity<Object> update (@RequestBody Tag tag){
+		if(tag != null){
+			if(tagBean.update(tag))
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			else
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+	}
+	
+
+	@RequestMapping(value="delete/{id:.+}", method=RequestMethod.DELETE)
+	public ResponseEntity<Object> delete (@PathVariable String id){
+		if(tagBean.delete(id)) {
+			return ResponseEntity.status(HttpStatus.OK).body(null); 
+		}
+		return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
 	}
 }

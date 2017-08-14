@@ -27,13 +27,26 @@ import com.nimbusds.jose.crypto.DirectEncrypter;
 import com.nimbusds.jwt.JWTClaimsSet;
 
 /**
+ * Clase que permite hacer operaciones sobre un token
+ * JWT. Con esta, se mira si el token provisto por el
+ * cliente es válido y además si ha expirado o no.
  * @author Pablo Gaitan
  *
  */
 public class JWTFilter {
 	
-	private final static Logger logger = LoggerFactory.getLogger(JWTFilter.class);
+	private static final Logger logger = LoggerFactory.getLogger(JWTFilter.class);
 	
+	private JWTFilter(){}
+	
+	/**
+	 * A partir de las credenciales que ya fueron verificadas,
+	 * previamente, se procede a generar el token único para
+	 * el usuario.
+	 * @param creds Credenciales de ingreso de cierto usuario.
+	 * @return Se crea una sesión en el servidor que es posteriormente
+	 * guardada.
+	 */
 	public static UserSession generateToken(AuthDTO creds){
 		// Generate secret key on runtime execution.
 		KeyGenerator keyGen;
@@ -70,12 +83,18 @@ public class JWTFilter {
 			us.setToken(token);
 			return us;
 		} catch (Exception e) {
-			logger.error("::::: Error generating token for user: "+creds.getUsername()
-					+ " :::::");
+			logger.error("Error generating token for user: "+creds.getUsername());
 			return null;
 		}
 	}
 
+	/**
+	 * Se encarga de verificar que el token enviado desde el cliente
+	 * no haya expirado o que sea válido.
+	 * @param token de tipo JWT
+	 * @param secret SecretKey que es especial para cada sesión.
+	 * @return true si el token es válido, de lo contrario false.
+	 */
 	public static boolean validateToken(String token,String secret){
 		// Parse into JWE object again...
 		SecretKey secretKey = convertSecretKey(secret);
@@ -93,12 +112,17 @@ public class JWTFilter {
 
 		// Get the plain text
 		Payload payload = jweObject.getPayload();
-		if(isExpired((Long)payload.toJSONObject().get("exp")))
-			return false;
-
-		return true;
+		return !(isExpired((Long)payload.toJSONObject().get("exp")));
 	}
 	
+	/**
+	 * Ya que un token puede tener información básica alojada
+	 * en su composición, se obtiene la propiedad sub que es
+	 * el username del usuario dueño del token.
+	 * @param token de tipo JWT
+	 * @param secret SecretKey que es especial para cada sesión.
+	 * @return Username del usuario, de lo contrario null
+	 */
 	public static String getSub(String token, String secret){
 		SecretKey secretKey = convertSecretKey(secret);
 		JWEObject jweObject;
@@ -117,16 +141,27 @@ public class JWTFilter {
 		return (String)payload.toJSONObject().get("sub");
 	}
 	
+	/**
+	 * Valida que la fecha del token dada en segundos no haya
+	 * expirado.
+	 * @param timestamp en segundos
+	 * @return true si expiró, de lo contrario false
+	 */
 	private static boolean isExpired(long timestamp){
 		return timestamp < (System.currentTimeMillis()/1000);
 	}
 	
+	/**
+	 * Reconstruye la secretKey que fue guardada en base64
+	 * a formato {@link SecretKey}
+	 * @param secretKey
+	 * @return
+	 */
 	private static SecretKey convertSecretKey(String secretKey){
 		// decode the base64 encoded string
 		byte[] decodedKey = Base64.decodeBase64(secretKey);
 		// rebuild key using SecretKeySpec
-		SecretKey originalKey = new SecretKeySpec(decodedKey,  "HmacSHA256"); 
-		return originalKey;
+		return new SecretKeySpec(decodedKey,  "HmacSHA256");
 	}
 
 }
