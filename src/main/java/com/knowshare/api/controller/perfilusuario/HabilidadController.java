@@ -5,6 +5,7 @@ package com.knowshare.api.controller.perfilusuario;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -95,20 +96,23 @@ public class HabilidadController {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
 	
-
-	@RequestMapping(value="delete/{id:.+}", method=RequestMethod.DELETE)
-	public ResponseEntity<Object> delete (@PathVariable String id){
-		if(habilidadBean.delete(id)) {
-			return ResponseEntity.status(HttpStatus.OK).body(null); 
-		}
-		return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
-	}
-	
 	
 	@RequestMapping(value="create", method=RequestMethod.POST)
 	public ResponseEntity<Object> create (@RequestBody HabilidadDTO habilidad){
 		if(habilidad != null){
 			if(habilidadBean.create(habilidad))
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			else
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+	}
+	
+
+	@RequestMapping(value="delete", method=RequestMethod.POST)
+	public ResponseEntity<Object> delete (@RequestBody ObjectId id){
+		if(id != null){
+			if(habilidadBean.delete(id))
 				return ResponseEntity.status(HttpStatus.OK).body(null);
 			else
 				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
