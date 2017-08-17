@@ -162,7 +162,7 @@ public class IdeaController {
 	@RequestMapping(value="/findOperacion/{id}/{tipo}" ,method = RequestMethod.GET)
 	public ResponseEntity<Object> findByOperaciones(HttpServletRequest request,
 			@PathVariable String id, @PathVariable String tipo){
-		List<OperacionIdea> op = ideaBean.findOpreaciones(id, tipo);
+		List<OperacionIdea> op = ideaBean.findOperaciones(id, tipo);
 		if(!op.isEmpty()){
 			return ResponseEntity.status(HttpStatus.OK).body(op);
 		}
