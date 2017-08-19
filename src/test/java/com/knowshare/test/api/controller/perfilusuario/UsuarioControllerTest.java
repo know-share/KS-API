@@ -28,6 +28,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.knowshare.dto.academia.CarreraDTO;
+import com.knowshare.dto.ludificacion.InsigniaDTO;
 import com.knowshare.dto.perfilusuario.ImagenDTO;
 import com.knowshare.dto.perfilusuario.UsuarioDTO;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
@@ -79,7 +80,7 @@ public class UsuarioControllerTest extends AbstractApiTest{
 				.setEnfasis(new ArrayList<>())
 				.setGustos(new ArrayList<>())
 				.setHabilidades(new ArrayList<>())
-				.setInsignias(Arrays.asList("insignia 1","insignia 2","insignia 3"))
+				.setInsignias(Arrays.asList(new InsigniaDTO(),new InsigniaDTO(),new InsigniaDTO()))
 				.setNombre("Nombre user 1")
 				.setPersonalidad(new Personalidad().setNombre("ENJP"))
 				.setSeguidores(new ArrayList<>())
@@ -163,9 +164,9 @@ public class UsuarioControllerTest extends AbstractApiTest{
 			.andExpect(jsonPath("$.gustos", hasSize(0)))
 			.andExpect(jsonPath("$.habilidades", hasSize(0)))
 			.andExpect(jsonPath("$.insignias", hasSize(3)))
-			.andExpect(jsonPath("$.insignias[0]", is("insignia 1")))
-			.andExpect(jsonPath("$.insignias[1]", is("insignia 2")))
-			.andExpect(jsonPath("$.insignias[2]", is("insignia 3")))
+			.andExpect(jsonPath("$.insignias[0]").isNotEmpty())
+			.andExpect(jsonPath("$.insignias[1]").isNotEmpty())
+			.andExpect(jsonPath("$.insignias[2]").isNotEmpty())
 			.andExpect(jsonPath("$.personalidad.nombre", is("ENJP")))
 			.andExpect(jsonPath("$.seguidores", hasSize(0)))
 			.andExpect(jsonPath("$.tipoUsuario", is("ESTUDIANTE")))

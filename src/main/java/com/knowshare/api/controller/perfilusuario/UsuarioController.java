@@ -313,4 +313,13 @@ public class UsuarioController {
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
+	
+	@RequestMapping(value="updateInsignias", method=RequestMethod.PUT)
+	public ResponseEntity<Object> updateInsignias(
+			HttpServletRequest request){
+		final String username = request.getAttribute(USERNAME).toString();
+		if(usuarioBean.updateInsignias(username))
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	}
 }
