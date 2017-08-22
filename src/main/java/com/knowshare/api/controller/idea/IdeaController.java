@@ -168,4 +168,16 @@ public class IdeaController {
 		}
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}
+	
+	@RequestMapping(value="/cambiarestado" ,method = RequestMethod.PUT)
+	public ResponseEntity<?> cambiarEstado(HttpServletRequest request,
+			@RequestBody IdeaDTO dto ){
+		IdeaDTO ret = ideaBean.cambiarEstado(dto);
+		if(ret != null){
+			return ResponseEntity.status(HttpStatus.OK).body(ret);
+		}
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	}
+	
+	
 }
