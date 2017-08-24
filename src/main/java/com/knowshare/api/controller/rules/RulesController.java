@@ -54,12 +54,15 @@ public class RulesController {
 	@RequestMapping(value="/recomendacionConexiones", method=RequestMethod.GET)
 	public ResponseEntity<Object> getRecomendaciones(
 			HttpServletRequest request){
-		final String username = request.getAttribute("username").toString();
-		final List<RecomendacionDTO> recomendaciones = (List<RecomendacionDTO>)recomendacionesBean
-				.setDeRecomendaciones(usuarioBean.getUsuario(username));
-		if(recomendaciones == null || recomendaciones.isEmpty())
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-		return ResponseEntity.ok(recomendaciones);
+		if(rulesAdminBean.isRulesOn()){
+			final String username = request.getAttribute("username").toString();
+			final List<RecomendacionDTO> recomendaciones = (List<RecomendacionDTO>)recomendacionesBean
+					.setDeRecomendaciones(usuarioBean.getUsuario(username));
+			if(recomendaciones == null || recomendaciones.isEmpty())
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+			return ResponseEntity.ok(recomendaciones);
+		}
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 	}
 	
 	/**
@@ -96,5 +99,29 @@ public class RulesController {
 		if(rulesAdminBean.updateRules())
 			return ResponseEntity.status(HttpStatus.OK).body(null);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	}
+	
+	/**
+	 * Controlador encargado de actualizar el atributo rules de las
+	 * preferencias del sistema.
+	 * @param state 1 o 0
+	 * @return HttpStatus.OK si pudo actualizar de lo contrario, HttpStatus.NOT_MODIFIED
+	 */
+	@RequestMapping(value="/rulesPreferences", method=RequestMethod.PATCH)
+	public ResponseEntity<Object> updateRulesPreferences(
+			@RequestParam(required=true) short state){
+		if(rulesAdminBean.updateRulesSystem(state))
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+	}
+	
+	/**
+	 * Obtiene el estado de la preferencia rules del sistema
+	 * @return HttpStatus.OK y true o false si las reglas están o no 
+	 * habilitadas
+	 */
+	@RequestMapping(value="/rulesPreferences", method=RequestMethod.GET)
+	public ResponseEntity<Object> getRulesPreferences(){
+		return ResponseEntity.status(HttpStatus.OK).body(rulesAdminBean.isRulesOn());
 	}
 }
