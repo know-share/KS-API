@@ -82,6 +82,12 @@ public class RulesControllerTest extends AbstractApiTest{
 			.andExpect(status().isUnauthorized());
 		
 		when(userSessionRepository.findByToken(anyString())).thenReturn(userSession);
+		when(rulesAdminBean.isRulesOn()).thenReturn(false);
+		mockMvc.perform(get(RECOMENDACION_CONEXIONES)
+				.header("Authorization", getToken()))
+			.andExpect(status().isNoContent());
+		
+		when(rulesAdminBean.isRulesOn()).thenReturn(true);
 		when(recomendacionesBean.setDeRecomendaciones(anyObject()))
 			.thenReturn(null);
 		when(usuarioBean.getUsuario(anyString()))
