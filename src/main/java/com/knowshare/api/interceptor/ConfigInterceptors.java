@@ -40,7 +40,6 @@ public class ConfigInterceptors extends WebMvcConfigurerAdapter {
 				"/api/usuario/isUsernameTaken",
 				"/api/usuario/isCorreoTaken",
 				"/api/usuario/",
-				"/api/leader/findAll",
 				"/api/usuario/image/**"
 				
 			);

@@ -3,6 +3,8 @@
  */
 package com.knowshare.api.controller.ludificacion;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.bson.types.ObjectId;
@@ -17,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.knowshare.dto.ludificacion.CarreraLeaderDTO;
 import com.knowshare.enterprise.bean.avales.AvalFacade;
+import com.knowshare.enterprise.bean.leaderboard.LeaderFacade;
 import com.knowshare.enums.TipoAvalEnum;
 
 /**
@@ -34,6 +38,9 @@ public class LudificacionController {
 	@Autowired
 	private AvalFacade avalBean;
 	
+	@Autowired
+	private LeaderFacade leaderBean;
+	
 	@RequestMapping(value = "avalar/{usernameTarget:.+}", method = RequestMethod.PUT)
 	public ResponseEntity<Object> avalarUsuario(
 			HttpServletRequest request,
@@ -47,5 +54,17 @@ public class LudificacionController {
 		if(avalBean.avalarUsuario(username, usernameTarget, id, TipoAvalEnum.valueOf(tipo)))
 			return ResponseEntity.status(HttpStatus.OK).body(null);
 		return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+	}
+	
+	
+	
+	@RequestMapping(value="/findAll", method=RequestMethod.GET, produces="application/json")
+	public ResponseEntity<List<CarreraLeaderDTO>> getAllCarreras(){
+		List<CarreraLeaderDTO> carreras = leaderBean.carrerasLeader();
+		if(carreras == null || carreras.isEmpty())
+			return ResponseEntity.status(HttpStatus.NO_CONTENT)
+			.body(null);
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(carreras);
 	}
 }
