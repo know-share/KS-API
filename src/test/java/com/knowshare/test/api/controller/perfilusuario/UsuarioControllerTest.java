@@ -389,7 +389,7 @@ public class UsuarioControllerTest extends AbstractApiTest{
 		
 		when(usuarioBean.isCorreoTaken(anyString()))
 			.thenReturn(true);
-		mockMvc.perform(get(IS_USERNAME_TAKEN+"?username=AnyUsername"))
+		mockMvc.perform(get(IS_CORREO_TAKEN+"?correo=AnyUsername"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(contentType))
 			.andExpect(jsonPath("$").isBoolean());

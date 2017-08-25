@@ -15,3 +15,6 @@ before_install:
   - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Gamification.git
   - cd KS-Gamification && mvn install -DskipTests && cd ..
 script: cd $TRAVIS_BUILD_DIR/ && mvn test -B
+after_success:
+  - mvn jacoco:report
+  - bash <(curl -s https://codecov.io/bash)
