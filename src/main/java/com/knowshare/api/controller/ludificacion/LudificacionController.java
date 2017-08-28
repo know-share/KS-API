@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.knowshare.dto.ludificacion.CarreraLeaderDTO;
+import com.knowshare.dto.ludificacion.LeaderDTO;
 import com.knowshare.enterprise.bean.avales.AvalFacade;
 import com.knowshare.enterprise.bean.leaderboard.LeaderFacade;
 import com.knowshare.enums.TipoAvalEnum;
@@ -59,12 +59,27 @@ public class LudificacionController {
 	
 	
 	@RequestMapping(value="/findAll", method=RequestMethod.GET, produces="application/json")
-	public ResponseEntity<List<CarreraLeaderDTO>> getAllCarreras(){
-		List<CarreraLeaderDTO> carreras = leaderBean.carrerasLeader();
+	public ResponseEntity<List<LeaderDTO>> getAllCarreras(){
+		List<LeaderDTO> carreras = leaderBean.carrerasLeader();
 		if(carreras == null || carreras.isEmpty())
 			return ResponseEntity.status(HttpStatus.NO_CONTENT)
 			.body(null);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(carreras);
+	}
+	
+	@RequestMapping(value="/getEstudiantes", method=RequestMethod.GET, produces="application/json")
+	public ResponseEntity<List<LeaderDTO>> 
+		getEstudiantes(HttpServletRequest request, @RequestParam String carrera){
+		if(carrera == null)
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(null);
+		String username = request.getAttribute(USERNAME).toString();
+		List<LeaderDTO> usuarios = leaderBean.estudiantesLeader(username, carrera);
+		if(usuarios == null)
+			return ResponseEntity.status(HttpStatus.NO_CONTENT)
+					.body(null);
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(usuarios);
 	}
 }
