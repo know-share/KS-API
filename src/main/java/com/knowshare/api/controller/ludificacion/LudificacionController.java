@@ -1,3 +1,5 @@
+
+
 /**
  * 
  */
@@ -31,7 +33,7 @@ import com.knowshare.enums.TipoAvalEnum;
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/ludificacion")
-public class LudificacionController {
+public class LudificacionController  {
 	
 	private static final String USERNAME = "username";
 
