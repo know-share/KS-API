@@ -80,22 +80,6 @@ public class IdeaController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
 	}
 	
-	/**
-	 * Debe ser renombrado el endpoint
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value="/find10" ,method = RequestMethod.GET)
-	public ResponseEntity<Object> find(
-			HttpServletRequest request){
-		final String username = request.getAttribute(USERNAME).toString();
-		List<IdeaDTO> ideas = ideaBean.findRed(username);
-		if(ideas == null || ideas.isEmpty()){
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(ideas);
-	}
-	
 	@RequestMapping(value="/comentar" ,method = RequestMethod.POST)
 	public ResponseEntity<Object> comentario(HttpServletRequest request,
 			@RequestBody Comentario params){
@@ -202,8 +186,7 @@ public class IdeaController {
 	 */
 	@RequestMapping(value="/findByTags" ,method = RequestMethod.POST)
 	public ResponseEntity<Object> findByTags(HttpServletRequest request,
-			List<Tag> tags){
-		//final String username = request.getAttribute(USERNAME).toString();
+			@RequestBody List<Tag> tags){
 		List<IdeaDTO> ideas = ideaBean.findByTags(tags);
 		if(ideas == null || ideas.isEmpty()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
