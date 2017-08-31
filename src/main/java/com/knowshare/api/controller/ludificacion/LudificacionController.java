@@ -25,6 +25,7 @@ import com.knowshare.dto.ludificacion.LeaderDTO;
 import com.knowshare.enterprise.bean.avales.AvalFacade;
 import com.knowshare.enterprise.bean.leaderboard.LeaderFacade;
 import com.knowshare.enums.TipoAvalEnum;
+import com.knowshare.enums.TipoUsuariosEnum;
 
 /**
  * @author Miguel Montañez
@@ -58,9 +59,7 @@ public class LudificacionController  {
 		return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
 	}
 	
-	
-	
-	@RequestMapping(value="/findAll", method=RequestMethod.GET, produces="application/json")
+	@RequestMapping(value="/leaderCarreras", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<List<LeaderDTO>> getAllCarreras(){
 		List<LeaderDTO> carreras = leaderBean.carrerasLeader();
 		if(carreras == null || carreras.isEmpty())
@@ -70,14 +69,20 @@ public class LudificacionController  {
 				.body(carreras);
 	}
 	
-	@RequestMapping(value="/getEstudiantes", method=RequestMethod.GET, produces="application/json")
+	@RequestMapping(value="/leaderUsuarios", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<List<LeaderDTO>> 
-		getEstudiantes(HttpServletRequest request, @RequestParam String carrera){
-		if(carrera == null)
+		getEstudiantes(HttpServletRequest request, 
+				@RequestParam String carrera,
+				@RequestParam String tipo){
+		if(carrera == null || tipo == null)
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(null);
+		final TipoUsuariosEnum tipoEnum = TipoUsuariosEnum.valueOf(tipo);
+		if(tipoEnum.equals(TipoUsuariosEnum.EGRESADO))
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(null);
 		String username = request.getAttribute(USERNAME).toString();
-		List<LeaderDTO> usuarios = leaderBean.estudiantesLeader(username, carrera);
+		List<LeaderDTO> usuarios = leaderBean.usuariosLeader(username, carrera,tipoEnum);
 		if(usuarios == null)
 			return ResponseEntity.status(HttpStatus.NO_CONTENT)
 					.body(null);
