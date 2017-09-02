@@ -165,7 +165,7 @@ public class IdeaController {
 	}
 	
 	/**
-	 * Debe ser renombrado el endpoint
+	 * 
 	 * @param request
 	 * @return
 	 */
@@ -193,6 +193,4 @@ public class IdeaController {
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(ideas);
 	}
-	
-	
 }

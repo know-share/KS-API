@@ -84,6 +84,23 @@ public class CarreraController{
 	}
 	
 	/**
+	 * Descripción: actualiza los enfasis de una Carrera.
+	 * @param carrera
+	 * @return OK si logro actualizar con éxito, NO_CONTENT si no encontro la Carrera a actualizar, 
+	 * BAD_REQUEST si hubo una falla en sintaxis. 
+	 */
+	@RequestMapping(value="updateEnfasis", method=RequestMethod.PATCH)
+	public ResponseEntity<Object> updateEnfasis (@RequestBody CarreraDTO carrera){
+		if(carrera != null){
+			if(carreraBean.updateEnfasis(carrera))
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			else
+				return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+	}
+	
+	/**
 	 * Descripción: elimina una Carrera
 	 * @param id
 	 * @return Ok si elimina con éxito, NOT_MODIFIED si hubo algún error en el proceso de eliminar. 
