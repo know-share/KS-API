@@ -3,7 +3,9 @@
  */
 package com.knowshare.api.controller.admin;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -41,5 +43,16 @@ public class AdminController{
 					.body(null);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(usuarios);
+	}
+	
+	@RequestMapping(value="/getTags", method=RequestMethod.GET, produces="application/json")
+	public ResponseEntity<Map<String,Integer>> 
+		getTags( ){
+		Map<String,Integer>map = dashboardBean.usoTags();
+		if(map == null)
+			return ResponseEntity.status(HttpStatus.NO_CONTENT)
+					.body(null);
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(map);
 	}
 }
