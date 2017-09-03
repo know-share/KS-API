@@ -171,7 +171,8 @@ public class HabilidadControllerTest extends AbstractApiTest{
 		mockMvc.perform(patch(UPDATE)
 				.header("Authorization", getToken())
 				.accept(contentType)
-				.contentType(contentType))
+				.contentType(contentType)
+				.content(asJsonString(null)))
 			.andExpect(status().isBadRequest());
 		
 		when(habilidadBean.update(anyObject()))
@@ -213,7 +214,8 @@ public class HabilidadControllerTest extends AbstractApiTest{
 		mockMvc.perform(post(DELETE)
 				.header("Authorization", getToken())
 				.accept(contentType)
-				.contentType(contentType))
+				.contentType(contentType)
+				.content(asJsonString(null)))
 			.andExpect(status().isBadRequest());
 		
 		mockMvc.perform(post(DELETE)
@@ -251,7 +253,8 @@ public class HabilidadControllerTest extends AbstractApiTest{
 		mockMvc.perform(post(CREATE)
 				.header("Authorization", getToken())
 				.accept(contentType)
-				.contentType(contentType))
+				.contentType(contentType)
+				.content(asJsonString(null)))
 			.andExpect(status().isBadRequest());
 		
 		when(habilidadBean.create(anyObject()))

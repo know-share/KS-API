@@ -4,6 +4,8 @@
 package com.knowshare.api.controller.perfilusuario;
 
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -27,7 +29,9 @@ import com.knowshare.dto.perfilusuario.UsuarioDTO;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
 import com.knowshare.entities.academia.FormacionAcademica;
 import com.knowshare.entities.academia.TrabajoGrado;
+import com.knowshare.entities.perfilusuario.Gusto;
 import com.knowshare.entities.perfilusuario.Usuario;
+import com.knowshare.enums.PreferenciaIdeaEnum;
 import com.knowshare.enums.TipoImagenEnum;
 
 /**
@@ -298,5 +302,48 @@ public class UsuarioController {
 		    return new ResponseEntity<>(image.getBytes(), headers, HttpStatus.OK);
 		}
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	}
+	
+	@RequestMapping(value="preferenciaIdea", method=RequestMethod.PATCH)
+	public ResponseEntity<Object> updatePreferencia(
+			HttpServletRequest request,
+			@RequestBody String preferencia){
+		final String username = request.getAttribute(USERNAME).toString();
+		if(preferencia != null){
+			if(this.usuarioBean.updatePreferenciaIdea(username, PreferenciaIdeaEnum.valueOf(preferencia)))
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+	}
+	
+	@RequestMapping(value="updateInsignias", method=RequestMethod.PUT)
+	public ResponseEntity<Object> updateInsignias(
+			HttpServletRequest request){
+		final String username = request.getAttribute(USERNAME).toString();
+		if(usuarioBean.updateInsignias(username))
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	}
+	
+	@RequestMapping(value="promover/{username:.+}", method=RequestMethod.PUT)
+	public ResponseEntity<Object> promote(
+			@PathVariable String username){
+		if(usuarioBean.promoteEstudiante(username))
+			return ResponseEntity.status(HttpStatus.OK).body(null);
+		return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+	}
+	
+	@RequestMapping(value ="actualizarGustos", method=RequestMethod.PATCH)
+	public ResponseEntity<Object> actualizarGustos(
+			HttpServletRequest request,
+			@RequestBody List<Gusto> gustos){
+		final String username = request.getAttribute(USERNAME).toString();
+		if(null != gustos){
+			if(this.usuarioBean.actualizarGustos(gustos, username))
+				return ResponseEntity.status(HttpStatus.OK).body(null);
+			return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
 }

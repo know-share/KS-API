@@ -11,6 +11,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -25,6 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.knowshare.dto.idea.Comentario;
 import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.enterprise.bean.idea.IdeaFacade;
+import com.knowshare.entities.idea.OperacionIdea;
 import com.knowshare.enums.TipoIdeaEnum;
 import com.knowshare.test.api.general.AbstractApiTest;
 
@@ -42,11 +44,13 @@ public class IdeaControllerTest extends AbstractApiTest {
 	private static final String CREAR = "/api/idea/crear";
 	private static final String FIND_BY_USUARIO = "/api/idea/findByUsuario/";
 	private static final String FIND_BY_USUARIO_PROY = "/api/idea/findByUsuarioPro/";
-	private static final String FIND_10 = "/api/idea/find10";
+	private static final String FIND_RED = "/api/idea/findRed";
 	private static final String COMMENT = "/api/idea/comentar";
 	private static final String LIGHT = "/api/idea/light";
 	private static final String FIND_BY_ID = "/api/idea/findById/";
 	private static final String SHARE = "/api/idea/compartir";
+	private static final String FIND_OPERACION = "/api/idea/findOperacion/";
+	private static final String CHANGE_ESTADO = "/api/idea/cambiarestado";
 	
 	@Before
 	public void setup(){
@@ -183,31 +187,31 @@ public class IdeaControllerTest extends AbstractApiTest {
 	}
 	
 	@Test
-	public void findTest() throws Exception {
-		mockMvc.perform(get(FIND_10))
+	public void findRedTest() throws Exception {
+		mockMvc.perform(get(FIND_RED))
 			.andExpect(status().isUnauthorized());
 		
-		mockMvc.perform(get(FIND_10)
+		mockMvc.perform(get(FIND_RED)
 				.header("Authorization", "bad token"))
 			.andExpect(status().isUnauthorized());
 		
 		when(userSessionRepository.findByToken(anyString()))
 			.thenReturn(userSession);
-		when(ideaBean.find10("username user 1"))
+		when(ideaBean.findRed("username user 1"))
 			.thenReturn(null);
-		mockMvc.perform(get(FIND_10)
+		mockMvc.perform(get(FIND_RED)
 				.header("Authorization", getToken()))
 			.andExpect(status().isNoContent());
 		
-		when(ideaBean.find10("username user 1"))
+		when(ideaBean.findRed("username user 1"))
 			.thenReturn(new ArrayList<>());
-		mockMvc.perform(get(FIND_10)
+		mockMvc.perform(get(FIND_RED)
 				.header("Authorization", getToken()))
 			.andExpect(status().isNoContent());
 		
-		when(ideaBean.find10("username user 1"))
+		when(ideaBean.findRed("username user 1"))
 			.thenReturn(Arrays.asList(idea));
-		mockMvc.perform(get(FIND_10)
+		mockMvc.perform(get(FIND_RED)
 				.header("Authorization", getToken()))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(contentType))
@@ -383,6 +387,74 @@ public class IdeaControllerTest extends AbstractApiTest {
 			.andExpect(jsonPath("$.alcance", is("Alcance")))
 			.andExpect(jsonPath("$.tipo",is("NU")))
 			.andExpect(jsonPath("$.usuario", is("username user 1")));
+	}
+	
+	@Test
+	public void findByOperacionesTest() throws Exception{
+		mockMvc.perform(get(FIND_OPERACION))
+			.andExpect(status().isNotFound());
+		
+		mockMvc.perform(get(FIND_OPERACION+"id"))
+			.andExpect(status().isNotFound());
+		
+		mockMvc.perform(get(FIND_OPERACION+"id/tipo"))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(get(FIND_OPERACION+"id/tipo")
+				.header("Authorization", "bad token"))
+		.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		when(ideaBean.findOperaciones(anyString(), anyString()))
+			.thenReturn(new ArrayList<>());
+		mockMvc.perform(get(FIND_OPERACION+"id/tipo")
+				.header("Authorization", getToken()))
+		.andExpect(status().isNoContent());
+		
+		when(ideaBean.findOperaciones(anyString(), anyString()))
+			.thenReturn(Arrays.asList(new OperacionIdea()));
+		mockMvc.perform(get(FIND_OPERACION+"id/tipo")
+				.header("Authorization", getToken()))
+		.andExpect(status().isOk())
+		.andExpect(content().contentType(contentType))
+		.andExpect(jsonPath("$", hasSize(1)));
+	}
+	
+	@Test
+	public void cambiarEstadoTest() throws Exception{
+		mockMvc.perform(put(CHANGE_ESTADO))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(put(CHANGE_ESTADO)
+				.header("Authorization", "bad token"))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		mockMvc.perform(put(CHANGE_ESTADO)
+				.header("Authorization", getToken())
+				.contentType(contentType)
+				.content(asJsonString(null)))
+			.andExpect(status().isBadRequest());
+		
+		when(ideaBean.cambiarEstado(anyObject()))
+			.thenReturn(null);
+		mockMvc.perform(put(CHANGE_ESTADO)
+				.header("Authorization", getToken())
+				.contentType(contentType)
+				.content(asJsonString(new IdeaDTO())))
+			.andExpect(status().isInternalServerError());
+		
+		when(ideaBean.cambiarEstado(anyObject()))
+			.thenReturn(new IdeaDTO());
+		mockMvc.perform(put(CHANGE_ESTADO)
+				.header("Authorization", getToken())
+				.contentType(contentType)
+				.content(asJsonString(new IdeaDTO())))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(contentType))
+			.andExpect(jsonPath("$").exists());
 	}
 
 }

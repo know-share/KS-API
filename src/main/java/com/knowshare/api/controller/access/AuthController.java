@@ -26,7 +26,7 @@ import com.knowshare.entities.app.UserSession;
 import com.knowshare.entities.perfilusuario.Usuario;
 
 /**
- * @author miguel
+ * @author Miguel Montañez
  *
  */
 

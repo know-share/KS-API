@@ -22,6 +22,7 @@ import com.knowshare.dto.idea.Comentario;
 import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.enterprise.bean.idea.IdeaFacade;
 import com.knowshare.entities.idea.OperacionIdea;
+import com.knowshare.entities.idea.Tag;
 import com.knowshare.enums.TipoOperacionEnum;
 
 /**
@@ -77,22 +78,6 @@ public class IdeaController {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
-	}
-	
-	/**
-	 * Debe ser renombrado el endpoint
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value="/find10" ,method = RequestMethod.GET)
-	public ResponseEntity<Object> find(
-			HttpServletRequest request){
-		final String username = request.getAttribute(USERNAME).toString();
-		List<IdeaDTO> ideas = ideaBean.find10(username);
-		if(ideas == null || ideas.isEmpty()){
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(ideas);
 	}
 	
 	@RequestMapping(value="/comentar" ,method = RequestMethod.POST)
@@ -160,12 +145,55 @@ public class IdeaController {
 	}
 	
 	@RequestMapping(value="/findOperacion/{id}/{tipo}" ,method = RequestMethod.GET)
-	public ResponseEntity<?> findByOperaciones(HttpServletRequest request,
+	public ResponseEntity<Object> findByOperaciones(HttpServletRequest request,
 			@PathVariable String id, @PathVariable String tipo){
-		List<OperacionIdea> op = ideaBean.findOpreaciones(id, tipo);
+		List<OperacionIdea> op = ideaBean.findOperaciones(id, tipo);
 		if(!op.isEmpty()){
 			return ResponseEntity.status(HttpStatus.OK).body(op);
 		}
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+	}
+	
+	@RequestMapping(value="/cambiarestado" ,method = RequestMethod.PUT)
+	public ResponseEntity<Object> cambiarEstado(HttpServletRequest request,
+			@RequestBody IdeaDTO dto ){
+		if(null != dto){
+			IdeaDTO ret = ideaBean.cambiarEstado(dto);
+			if(ret != null){
+				return ResponseEntity.status(HttpStatus.OK).body(ret);
+			}
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="/findRed" ,method = RequestMethod.GET)
+	public ResponseEntity<Object> findRed(HttpServletRequest request){
+		final String username = request.getAttribute(USERNAME).toString();
+		List<IdeaDTO> ideas = ideaBean.findRed(username);
+		if(ideas == null || ideas.isEmpty()){
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(ideas);
+	}
+	
+	/**
+	 * Debe ser renombrado el endpoint
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="/findByTags" ,method = RequestMethod.POST)
+	public ResponseEntity<Object> findByTags(HttpServletRequest request,
+			@RequestBody List<Tag> tags){
+		List<IdeaDTO> ideas = ideaBean.findByTags(tags);
+		if(ideas == null || ideas.isEmpty()){
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(ideas);
 	}
 }

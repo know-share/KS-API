@@ -28,6 +28,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 
 import com.knowshare.dto.academia.CarreraDTO;
+import com.knowshare.dto.ludificacion.InsigniaDTO;
 import com.knowshare.dto.perfilusuario.ImagenDTO;
 import com.knowshare.dto.perfilusuario.UsuarioDTO;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
@@ -65,6 +66,10 @@ public class UsuarioControllerTest extends AbstractApiTest{
 	private static final String UPDATE_HABILIDAD_CUALIDAD = "/api/usuario/actualizarHabilidadCualidad";
 	private static final String UPLOAD = "/api/usuario/upload";
 	private static final String GET_IMAGE = "/api/usuario/image/";
+	private static final String UPDATE_PREFERENCIA = "/api/usuario/preferenciaIdea/";
+	private static final String UPDATE_BADGES = "/api/usuario/updateInsignias";
+	private static final String PROMOTE = "/api/usuario/promover/";
+	private static final String UPDATE_GUSTOS = "/api/usuario/actualizarGustos";
 	
 	@Before
 	public void setup(){
@@ -79,7 +84,7 @@ public class UsuarioControllerTest extends AbstractApiTest{
 				.setEnfasis(new ArrayList<>())
 				.setGustos(new ArrayList<>())
 				.setHabilidades(new ArrayList<>())
-				.setInsignias(Arrays.asList("insignia 1","insignia 2","insignia 3"))
+				.setInsignias(Arrays.asList(new InsigniaDTO(),new InsigniaDTO(),new InsigniaDTO()))
 				.setNombre("Nombre user 1")
 				.setPersonalidad(new Personalidad().setNombre("ENJP"))
 				.setSeguidores(new ArrayList<>())
@@ -94,6 +99,9 @@ public class UsuarioControllerTest extends AbstractApiTest{
 		mockMvc.perform(get(IS_USERNAME_TAKEN))
 			.andExpect(status().isBadRequest());
 		
+		mockMvc.perform(get(IS_USERNAME_TAKEN+"?username="))
+			.andExpect(status().isBadRequest());
+		
 		when(usuarioBean.isUsernameTaken(anyString()))
 			.thenReturn(true);
 		mockMvc.perform(get(IS_USERNAME_TAKEN+"?username=AnyUsername"))
@@ -106,7 +114,8 @@ public class UsuarioControllerTest extends AbstractApiTest{
 	public void crearUsuarioTest() throws Exception{
 		mockMvc.perform(post(CREATE_USER)
 				.accept(contentType)
-				.contentType(contentType))
+				.contentType(contentType)
+				.content(asJsonString(null)))
 			.andExpect(status().isBadRequest());
 		
 		when(usuarioBean.crearUsuario(anyObject()))
@@ -163,9 +172,9 @@ public class UsuarioControllerTest extends AbstractApiTest{
 			.andExpect(jsonPath("$.gustos", hasSize(0)))
 			.andExpect(jsonPath("$.habilidades", hasSize(0)))
 			.andExpect(jsonPath("$.insignias", hasSize(3)))
-			.andExpect(jsonPath("$.insignias[0]", is("insignia 1")))
-			.andExpect(jsonPath("$.insignias[1]", is("insignia 2")))
-			.andExpect(jsonPath("$.insignias[2]", is("insignia 3")))
+			.andExpect(jsonPath("$.insignias[0]").isNotEmpty())
+			.andExpect(jsonPath("$.insignias[1]").isNotEmpty())
+			.andExpect(jsonPath("$.insignias[2]").isNotEmpty())
 			.andExpect(jsonPath("$.personalidad.nombre", is("ENJP")))
 			.andExpect(jsonPath("$.seguidores", hasSize(0)))
 			.andExpect(jsonPath("$.tipoUsuario", is("ESTUDIANTE")))
@@ -308,6 +317,13 @@ public class UsuarioControllerTest extends AbstractApiTest{
 				.header("Authorization",getToken())
 				.accept(contentType)
 				.contentType(contentType)
+				.content(asJsonString(null)))
+			.andExpect(status().isBadRequest());
+		
+		mockMvc.perform(post(ADD_TG)
+				.header("Authorization",getToken())
+				.accept(contentType)
+				.contentType(contentType)
 				.content(asJsonString(tg)))
 			.andExpect(status().isInternalServerError());
 		
@@ -340,6 +356,13 @@ public class UsuarioControllerTest extends AbstractApiTest{
 			.thenReturn(false);
 		when(userSessionRepository.findByToken(anyString()))
 			.thenReturn(userSession);
+		mockMvc.perform(post(ADD_FA)
+				.header("Authorization",getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(null)))
+			.andExpect(status().isBadRequest());
+		
 		mockMvc.perform(post(ADD_FA)
 				.header("Authorization",getToken())
 				.accept(contentType)
@@ -386,9 +409,12 @@ public class UsuarioControllerTest extends AbstractApiTest{
 		mockMvc.perform(get(IS_CORREO_TAKEN))
 			.andExpect(status().isBadRequest());
 		
+		mockMvc.perform(get(IS_CORREO_TAKEN+"?correo="))
+			.andExpect(status().isBadRequest());
+		
 		when(usuarioBean.isCorreoTaken(anyString()))
 			.thenReturn(true);
-		mockMvc.perform(get(IS_USERNAME_TAKEN+"?username=AnyUsername"))
+		mockMvc.perform(get(IS_CORREO_TAKEN+"?correo=AnyUsername"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(contentType))
 			.andExpect(jsonPath("$").isBoolean());
@@ -412,7 +438,8 @@ public class UsuarioControllerTest extends AbstractApiTest{
 		mockMvc.perform(patch(UPDATE_INFO_ACADEMICA)
 				.header("Authorization", getToken())
 				.accept(contentType)
-				.contentType(contentType))
+				.contentType(contentType)
+				.content(asJsonString(null)))
 			.andExpect(status().isBadRequest());
 		
 		when(usuarioBean.actualizarInfoAcademica(anyObject()))
@@ -452,7 +479,8 @@ public class UsuarioControllerTest extends AbstractApiTest{
 		mockMvc.perform(patch(UPDATE_HABILIDAD_CUALIDAD)
 				.header("Authorization", getToken())
 				.accept(contentType)
-				.contentType(contentType))
+				.contentType(contentType)
+				.content(asJsonString(null)))
 			.andExpect(status().isBadRequest());
 		
 		when(usuarioBean.actualizarHabilidadCualidad(anyObject()))
@@ -492,7 +520,8 @@ public class UsuarioControllerTest extends AbstractApiTest{
 		mockMvc.perform(patch(UPDATE_INFO_BASIS)
 				.header("Authorization", getToken())
 				.accept(contentType)
-				.contentType(contentType))
+				.contentType(contentType)
+				.content(asJsonString(null)))
 			.andExpect(status().isBadRequest());
 		
 		when(usuarioBean.actualizarBasis(anyObject()))
@@ -570,6 +599,124 @@ public class UsuarioControllerTest extends AbstractApiTest{
 		mockMvc.perform(get(GET_IMAGE+"username"))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType("image/jpeg"));
+	}
+	
+	@Test
+	public void updatePreferenciaTest() throws Exception{
+		mockMvc.perform(patch(UPDATE_PREFERENCIA))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(patch(UPDATE_PREFERENCIA)
+				.header("Authorization", "bad token"))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		mockMvc.perform(patch(UPDATE_PREFERENCIA)
+				.header("Authorization", getToken())
+				.contentType(contentType))
+			.andExpect(status().isBadRequest());
+		
+		when(usuarioBean.updatePreferenciaIdea(anyString(), anyObject()))
+			.thenReturn(false);
+		mockMvc.perform(patch(UPDATE_PREFERENCIA)
+				.header("Authorization", getToken())
+				.contentType(contentType)
+				.content(PreferenciaIdeaEnum.ORDEN_CRONOLOGICO.toString().getBytes()))
+			.andExpect(status().isNotModified());
+		
+		when(usuarioBean.updatePreferenciaIdea(anyString(), anyObject()))
+			.thenReturn(true);
+		mockMvc.perform(patch(UPDATE_PREFERENCIA)
+				.header("Authorization", getToken())
+				.contentType(contentType)
+				.content(PreferenciaIdeaEnum.ORDEN_CRONOLOGICO.toString().getBytes()))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void updateInsigniasTest() throws Exception{
+		mockMvc.perform(put(UPDATE_BADGES))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(put(UPDATE_BADGES)
+				.header("Authorization","bad token"))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		when(usuarioBean.updateInsignias(anyString()))
+			.thenReturn(false);
+		mockMvc.perform(put(UPDATE_BADGES)
+				.header("Authorization",getToken()))
+			.andExpect(status().isInternalServerError());
+		
+		when(usuarioBean.updateInsignias(anyString()))
+			.thenReturn(true);
+		mockMvc.perform(put(UPDATE_BADGES)
+				.header("Authorization",getToken()))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void promoteTest() throws Exception{
+		mockMvc.perform(put(PROMOTE))
+			.andExpect(status().isNotFound());
+		
+		mockMvc.perform(put(PROMOTE+"anyUser"))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(put(PROMOTE+"anyUser")
+				.header("Authorization","bad token"))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		when(usuarioBean.promoteEstudiante(anyString()))
+			.thenReturn(false);
+		mockMvc.perform(put(PROMOTE+"anyUser")
+				.header("Authorization",getToken()))
+			.andExpect(status().isNotModified());
+		
+		when(usuarioBean.promoteEstudiante(anyString()))
+			.thenReturn(true);
+		mockMvc.perform(put(PROMOTE+"anyUser")
+				.header("Authorization",getToken()))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void actualizarGustosTest() throws Exception{
+		mockMvc.perform(patch(UPDATE_GUSTOS))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(patch(UPDATE_GUSTOS)
+				.header("Authorization","bad token"))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		mockMvc.perform(patch(UPDATE_GUSTOS)
+				.header("Authorization",getToken())
+				.contentType(contentType)
+				.content(asJsonString(null)))
+			.andExpect(status().isBadRequest());
+		
+		when(usuarioBean.actualizarGustos(anyObject(), anyString()))
+			.thenReturn(false);
+		mockMvc.perform(patch(UPDATE_GUSTOS)
+				.header("Authorization",getToken())
+				.contentType(contentType)
+				.content(asJsonString(new ArrayList<>())))
+			.andExpect(status().isNotModified());
+		
+		when(usuarioBean.actualizarGustos(anyObject(), anyString()))
+			.thenReturn(true);
+		mockMvc.perform(patch(UPDATE_GUSTOS)
+				.header("Authorization",getToken())
+				.contentType(contentType)
+				.content(asJsonString(new ArrayList<>())))
+			.andExpect(status().isOk());
 	}
 	
 	private byte[] bytesImage(){

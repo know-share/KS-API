@@ -12,4 +12,9 @@ before_install:
   - cd KS-Rules && mvn install -DskipTests && cd ..
   - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Admin.git
   - cd KS-Admin && mvn install -DskipTests && cd ..
+  - git clone --branch=$TRAVIS_BRANCH https://github.com/know-share/KS-Gamification.git
+  - cd KS-Gamification && mvn install -DskipTests && cd ..
 script: cd $TRAVIS_BUILD_DIR/ && mvn test -B
+after_success:
+  - mvn jacoco:report
+  - bash <(curl -s https://codecov.io/bash)

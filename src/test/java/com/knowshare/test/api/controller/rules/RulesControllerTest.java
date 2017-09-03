@@ -6,9 +6,12 @@ package com.knowshare.test.api.controller.rules;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyShort;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,6 +53,8 @@ public class RulesControllerTest extends AbstractApiTest{
 	
 	private static final String RECOMENDACION_CONEXIONES = "/api/rules/recomendacionConexiones";
 	private static final String BUSCAR_USUARIO = "/api/rules/buscarUsuario";
+	private static final String ACTUALIZAR = "/api/rules/update";
+	private static final String PREFERENCIAS = "/api/rules/rulesPreferences";
 	
 	private List<?> recomendaciones;
 	
@@ -82,6 +87,12 @@ public class RulesControllerTest extends AbstractApiTest{
 			.andExpect(status().isUnauthorized());
 		
 		when(userSessionRepository.findByToken(anyString())).thenReturn(userSession);
+		when(rulesAdminBean.isRulesOn()).thenReturn(false);
+		mockMvc.perform(get(RECOMENDACION_CONEXIONES)
+				.header("Authorization", getToken()))
+			.andExpect(status().isNoContent());
+		
+		when(rulesAdminBean.isRulesOn()).thenReturn(true);
 		when(recomendacionesBean.setDeRecomendaciones(anyObject()))
 			.thenReturn(null);
 		when(usuarioBean.getUsuario(anyString()))
@@ -134,6 +145,10 @@ public class RulesControllerTest extends AbstractApiTest{
 			.thenReturn(new UsuarioDTO());
 		when(busquedaBean.buscarUsuario(anyObject(), anyString(), anyString()))
 			.thenReturn(null);
+		mockMvc.perform(get(BUSCAR_USUARIO+"?param=")
+				.header("Authorization",getToken()))
+			.andExpect(status().isBadRequest());
+		
 		mockMvc.perform(get(BUSCAR_USUARIO+"?param=something")
 				.header("Authorization",getToken()))
 			.andExpect(status().isNoContent());
@@ -161,5 +176,76 @@ public class RulesControllerTest extends AbstractApiTest{
 			.andExpect(jsonPath("$[1].porcentaje", is(2d)))
 			.andExpect(jsonPath("$[1].tipoUsuario", is("EGRESADO")))
 			.andExpect(jsonPath("$[1].username", is("username mock 2")));
+	}
+	
+	@Test
+	public void updateRulesTest() throws Exception{
+		mockMvc.perform(put(ACTUALIZAR))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(put(ACTUALIZAR)
+			.header("Authorization","bad token"))
+		.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString())).thenReturn(userSession);
+		when(rulesAdminBean.updateRules()).thenReturn(false);
+		mockMvc.perform(put(ACTUALIZAR)
+				.header("Authorization",getToken()))
+			.andExpect(status().isInternalServerError());
+		
+		when(rulesAdminBean.updateRules()).thenReturn(true);
+		mockMvc.perform(put(ACTUALIZAR)
+				.header("Authorization",getToken()))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void updateRulesPreferencesTest() throws Exception{
+		mockMvc.perform(patch(PREFERENCIAS))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(patch(PREFERENCIAS)
+			.header("Authorization","bad token"))
+		.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString())).thenReturn(userSession);
+		when(rulesAdminBean.updateRulesSystem(anyShort())).thenReturn(false);
+		mockMvc.perform(patch(PREFERENCIAS)
+				.header("Authorization",getToken()))
+			.andExpect(status().isBadRequest());
+		
+		mockMvc.perform(patch(PREFERENCIAS+"?state=1")
+				.header("Authorization",getToken()))
+			.andExpect(status().isNotModified());
+		
+		when(rulesAdminBean.updateRulesSystem(anyShort())).thenReturn(true);
+		mockMvc.perform(patch(PREFERENCIAS+"?state=1")
+				.header("Authorization",getToken()))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void getRulesPreferencesTest() throws Exception{
+		mockMvc.perform(get(PREFERENCIAS))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(get(PREFERENCIAS)
+			.header("Authorization","bad token"))
+		.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString())).thenReturn(userSession);
+		when(rulesAdminBean.isRulesOn()).thenReturn(false);
+		mockMvc.perform(get(PREFERENCIAS)
+				.header("Authorization",getToken()))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(contentType))
+			.andExpect(jsonPath("$",is(false)));
+		
+		when(rulesAdminBean.isRulesOn()).thenReturn(true);
+		mockMvc.perform(get(PREFERENCIAS)
+				.header("Authorization",getToken()))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(contentType))
+			.andExpect(jsonPath("$",is(true)));
 	}
 }
