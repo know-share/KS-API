@@ -17,7 +17,8 @@ import com.knowshare.enterprise.repository.app.UserSessionRepository;
  *
  */
 @Configuration
-@ComponentScan(basePackages = { "com.knowshare.api.controller", "com.knowshare.api.interceptor" }, lazyInit = true)
+@ComponentScan(basePackages = { "com.knowshare.api.controller", "com.knowshare.api.interceptor" }, 
+	lazyInit = true)
 public class ConfigApiContext extends WebMvcConfigurerAdapter{
 
 	UserSessionRepository userSessionRepository;

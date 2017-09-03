@@ -70,10 +70,10 @@ public class LudificacionController  {
 	}
 	
 	@RequestMapping(value="/leaderUsuarios", method=RequestMethod.GET, produces="application/json")
-	public ResponseEntity<List<LeaderDTO>> 
-		getEstudiantes(HttpServletRequest request, 
-				@RequestParam String carrera,
-				@RequestParam String tipo){
+	public ResponseEntity<List<LeaderDTO>> getEstudiantes(
+			HttpServletRequest request, 
+			@RequestParam String carrera,
+			@RequestParam String tipo){
 		if(carrera == null || tipo == null)
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body(null);

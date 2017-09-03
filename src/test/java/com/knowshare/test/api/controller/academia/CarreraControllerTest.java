@@ -45,6 +45,7 @@ public class CarreraControllerTest extends AbstractApiTest{
 	private final static String FIND_ALL = "/api/carrera/findAll";
 	private final static String GET_ENFASIS_AC = "/api/carrera/getEnfasisAreaConocimiento";
 	private final static String UPDATE = "/api/carrera";
+	private final static String UPDATE_ENFASIS = "/api/carrera/updateEnfasis";
 	private final static String DELETE = "/api/carrera/delete/";
 	private final static String CREATE = "/api/carrera/create";
 	
@@ -139,7 +140,8 @@ public class CarreraControllerTest extends AbstractApiTest{
 		mockMvc.perform(post(CREATE)
 				.header("Authorization", getToken())
 				.accept(contentType)
-				.contentType(contentType))
+				.contentType(contentType)
+				.content(asJsonString(null)))
 			.andExpect(status().isBadRequest());
 		
 		when(carreraBean.create(anyObject()))
@@ -214,11 +216,52 @@ public class CarreraControllerTest extends AbstractApiTest{
 				.content(asJsonString(new CarreraDTO())))
 			.andExpect(status().isNoContent());
 		
+		mockMvc.perform(patch(UPDATE)
+				.header("Authorization",getToken())
+				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(null)))
+			.andExpect(status().isBadRequest());
+		
 		when(carreraBean.update(anyObject()))
 			.thenReturn(true);
 		mockMvc.perform(patch(UPDATE)
 				.header("Authorization",getToken())
 				.accept(contentType)
+				.contentType(contentType)
+				.content(asJsonString(new CarreraDTO())))
+			.andExpect(status().isOk());
+	}
+	
+	@Test
+	public void updateEnfasis() throws Exception{
+		mockMvc.perform(patch(UPDATE_ENFASIS))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(patch(UPDATE_ENFASIS)
+				.header("Authorization", "bad token"))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		mockMvc.perform(patch(UPDATE_ENFASIS)
+				.header("Authorization", getToken())
+				.contentType(contentType)
+				.content(asJsonString(null)))
+			.andExpect(status().isBadRequest());
+		
+		when(carreraBean.updateEnfasis(anyObject()))
+			.thenReturn(false);
+		mockMvc.perform(patch(UPDATE_ENFASIS)
+				.header("Authorization", getToken())
+				.contentType(contentType)
+				.content(asJsonString(new CarreraDTO())))
+			.andExpect(status().isNoContent());
+		
+		when(carreraBean.updateEnfasis(anyObject()))
+			.thenReturn(true);
+		mockMvc.perform(patch(UPDATE_ENFASIS)
+				.header("Authorization", getToken())
 				.contentType(contentType)
 				.content(asJsonString(new CarreraDTO())))
 			.andExpect(status().isOk());
