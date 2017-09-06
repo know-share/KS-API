@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.knowshare.enterprise.bean.dashboards.DashboardsFacade;
 
 /**
+ * Endpoints para operaciones realizadas por el
+ * administrador del sistema
  * @author Felipe Bautista
  *
  */

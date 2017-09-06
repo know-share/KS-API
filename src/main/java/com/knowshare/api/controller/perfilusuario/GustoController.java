@@ -17,6 +17,7 @@ import com.knowshare.enterprise.bean.gusto.GustoFacade;
 import com.knowshare.entities.perfilusuario.Gusto;
 
 /**
+ * Endpoints para operaciones con objeto de tipo {@link Gusto}
  * @author Miguel Montañez
  *
  */
@@ -28,6 +29,12 @@ public class GustoController {
 	@Autowired
 	private GustoFacade gustoBean;
 	
+	/**
+	 * Encuentra todos los gustos disponibles
+	 * @return Si hay gustos retorna HttpStatus.OK con una
+	 * lista de {@link Gusto gustos}. Si la lista está vacía
+	 * retorna HttpStatus.NO_CONTENT
+	 */
 	@RequestMapping(value="/findAll", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<List<Gusto>> findAll(){
 		List<Gusto> gustos = gustoBean.getAllGustos();

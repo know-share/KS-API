@@ -19,6 +19,7 @@ import com.knowshare.dto.perfilusuario.CualidadDTO;
 import com.knowshare.enterprise.bean.cualidad.CualidadFacade;
 
 /**
+ * Endpoints para operaciones con objeto de tipo {@link Cualidad}
  * @author Miguel Montañez
  *
  */
@@ -32,6 +33,12 @@ public class CualidadController {
 	@Autowired
 	private CualidadFacade cualidadBean;
 	
+	/**
+	 * Obtiene todas las cualidades disponibles
+	 * @return Si la lista de cualidades no está vacía,
+	 * retorna una lista de {@link Cualidad cualidades} con estado
+	 * HttpStatus.OK. Si la lista está vacía retorna HttpStatus.NO_CONTENT
+	 */
 	@RequestMapping(value="/findAll", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<List<CualidadDTO>> findAll(){
 		logger.debug(":::: Start method findAll() in CualidadController ::::");

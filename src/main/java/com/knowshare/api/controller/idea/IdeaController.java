@@ -26,6 +26,8 @@ import com.knowshare.entities.idea.Tag;
 import com.knowshare.enums.TipoOperacionEnum;
 
 /**
+ * Endpoints para operaciones con objeto de tipo
+ * {@link Idea}
  * @author Pablo Gaitan
  *
  */

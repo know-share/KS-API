@@ -1,5 +1,3 @@
-
-
 /**
  * 
  */
@@ -28,6 +26,8 @@ import com.knowshare.enums.TipoAvalEnum;
 import com.knowshare.enums.TipoUsuariosEnum;
 
 /**
+ * Endpoints para operaciones que tengan que 
+ * ver con componente de ludificación
  * @author Miguel Montañez
  *
  */
@@ -44,6 +44,17 @@ public class LudificacionController  {
 	@Autowired
 	private LeaderFacade leaderBean;
 	
+	/**
+	 * Avala un usuario dado como parámetro
+	 * @param request
+	 * @param id de la cualidad o habilidad a avalar
+	 * @param usernameTarget usuario a avalar
+	 * @param tipo mapeada como {@link TipoAvalEnum}
+	 * @return Si la operación se pudo ejecutar de forma
+	 * correcta o si fue un aval válido retorna HttpStatus.OK.
+	 * Si el aval no pudo realizarse debido a que ya fue dado
+	 * retorna HttpStatus.NOT_MODIFIED
+	 */
 	@RequestMapping(value = "avalar/{usernameTarget:.+}", method = RequestMethod.PUT)
 	public ResponseEntity<Object> avalarUsuario(
 			HttpServletRequest request,
@@ -59,6 +70,14 @@ public class LudificacionController  {
 		return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
 	}
 	
+	/**
+	 * Usado para generar el leaderboard de estudiantes registrados
+	 * en cada carrera.
+	 * @return Si la lista usada para el leaderboard está vacía
+	 * retorna HttpStatus.NO_CONTENT. Si no está vacía
+	 * retorna la lista de tipo {@link LeaderDTO} con estado
+	 * HttpStatus.OK
+	 */
 	@RequestMapping(value="/leaderCarreras", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<List<LeaderDTO>> getAllCarreras(){
 		List<LeaderDTO> carreras = leaderBean.carrerasLeader();
@@ -69,6 +88,18 @@ public class LudificacionController  {
 				.body(carreras);
 	}
 	
+	/**
+	 * Usado para general el leaderboard de estudiantes con mayores
+	 * avales.
+	 * @param request
+	 * @param carrera del leaderboard a generar
+	 * @param tipo de usuario {@link TipoUsuariosEnum}
+	 * @return Si no se manda la carrera o el tipo se retorna un
+	 * HttpStatus.BAD_REQUEST, además si el tipo de usuario es 
+	 * TipoUsuariosEnum.EGRESADO. Si la lista del leaderboard está vacía
+	 * se retorna HttpStatus.NO_CONTENT. Si la lista no fue vacía se 
+	 * retorna la lista con estado HttpStatus.OK
+	 */
 	@RequestMapping(value="/leaderUsuarios", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<List<LeaderDTO>> getEstudiantes(
 			HttpServletRequest request, 

@@ -21,7 +21,8 @@ import com.knowshare.dto.academia.EnfasisAreaConocimientoDTO;
 import com.knowshare.enterprise.bean.carrera.CarreraFacade;
 
 /**
- * Clase controller que permite la comunicación entre el cliente y el servidor.
+ * Clase controller que permite la comunicación entre el 
+ * cliente y el servidor.
  * @author Miguel Montañez
  *
  */

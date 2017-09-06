@@ -21,8 +21,8 @@ import com.knowshare.dto.perfilusuario.HabilidadDTO;
 import com.knowshare.enterprise.bean.habilidad.HabilidadFacade;
 import com.knowshare.entities.perfilusuario.Habilidad;
 
-
 /**
+ * Endpoints para operaciones con objeto de tipo {@link Habilidad}
  * @author Miguel Montañez
  *
  */
