@@ -26,6 +26,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import com.knowshare.dto.idea.Comentario;
 import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.enterprise.bean.idea.IdeaFacade;
+import com.knowshare.enterprise.bean.rules.busqueda.BusquedaIdeaFacade;
 import com.knowshare.entities.idea.OperacionIdea;
 import com.knowshare.enums.TipoIdeaEnum;
 import com.knowshare.test.api.general.AbstractApiTest;
@@ -38,6 +39,9 @@ public class IdeaControllerTest extends AbstractApiTest {
 	
 	@MockBean
 	private IdeaFacade ideaBean;
+	
+	@MockBean
+	private BusquedaIdeaFacade ideaBusq;
 	
 	private IdeaDTO idea;
 	
@@ -197,19 +201,19 @@ public class IdeaControllerTest extends AbstractApiTest {
 		
 		when(userSessionRepository.findByToken(anyString()))
 			.thenReturn(userSession);
-		when(ideaBean.findRed("username user 1"))
+		when(ideaBusq.findRed("username user 1"))
 			.thenReturn(null);
 		mockMvc.perform(get(FIND_RED)
 				.header("Authorization", getToken()))
 			.andExpect(status().isNoContent());
 		
-		when(ideaBean.findRed("username user 1"))
+		when(ideaBusq.findRed("username user 1"))
 			.thenReturn(new ArrayList<>());
 		mockMvc.perform(get(FIND_RED)
 				.header("Authorization", getToken()))
 			.andExpect(status().isNoContent());
 		
-		when(ideaBean.findRed("username user 1"))
+		when(ideaBusq.findRed("username user 1"))
 			.thenReturn(Arrays.asList(idea));
 		mockMvc.perform(get(FIND_RED)
 				.header("Authorization", getToken()))

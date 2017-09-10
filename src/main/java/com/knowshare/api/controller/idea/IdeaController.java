@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.knowshare.dto.idea.Comentario;
 import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.enterprise.bean.idea.IdeaFacade;
+import com.knowshare.enterprise.bean.rules.busqueda.BusquedaIdeaFacade;
 import com.knowshare.entities.idea.OperacionIdea;
 import com.knowshare.entities.idea.Tag;
 import com.knowshare.enums.TipoOperacionEnum;
@@ -38,6 +39,9 @@ public class IdeaController {
 	
 	@Autowired
 	private IdeaFacade ideaBean;
+	
+	@Autowired
+	private BusquedaIdeaFacade ideaBusq;
 	
 	private static final String USERNAME = "username";
 	
@@ -177,7 +181,7 @@ public class IdeaController {
 	@RequestMapping(value="/findRed" ,method = RequestMethod.GET)
 	public ResponseEntity<Object> findRed(HttpServletRequest request){
 		final String username = request.getAttribute(USERNAME).toString();
-		List<IdeaDTO> ideas = ideaBean.findRed(username);
+		List<IdeaDTO> ideas = ideaBusq.findRed(username);
 		if(ideas == null || ideas.isEmpty()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
@@ -189,10 +193,25 @@ public class IdeaController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="/findByTags" ,method = RequestMethod.POST)
+//	@RequestMapping(value="/findByTags" ,method = RequestMethod.POST)
+//	public ResponseEntity<Object> findByTags(HttpServletRequest request,
+//			@RequestBody List<Tag> tags){
+//		List<IdeaDTO> ideas = ideaBusq.findByTags(tags);
+//		if(ideas == null || ideas.isEmpty()){
+//			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+//		}
+//		return ResponseEntity.status(HttpStatus.OK).body(ideas);
+//	}
+	
+	/**
+	 * Debe ser renombrado el endpoint
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="/find/{criterio}" ,method = RequestMethod.POST)
 	public ResponseEntity<Object> findByTags(HttpServletRequest request,
-			@RequestBody List<Tag> tags){
-		List<IdeaDTO> ideas = ideaBean.findByTags(tags);
+			@RequestBody List<Tag> tags,@PathVariable String criterio){
+		List<IdeaDTO> ideas = ideaBusq.findIdeas(tags,criterio,request.getAttribute(USERNAME).toString());
 		if(ideas == null || ideas.isEmpty()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
