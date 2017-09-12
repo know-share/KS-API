@@ -63,7 +63,7 @@ public class IdeaController {
 	@RequestMapping(value = "/findByUsuario/{usernameObj:.+}",method=RequestMethod.GET)
 	public ResponseEntity<Object> findByUsuario(HttpServletRequest request,
 			@PathVariable String usernameObj){
-		List<IdeaDTO> ret = ideaBean.findByUsuario(usernameObj);
+		List<IdeaDTO> ret = ideaBean.findByUsuario(request.getAttribute(USERNAME).toString(),usernameObj);
 		if(null != ret && !ret.isEmpty()){
 			return ResponseEntity.status(HttpStatus.OK).body(ret);
 		}

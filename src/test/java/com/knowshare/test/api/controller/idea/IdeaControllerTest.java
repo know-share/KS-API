@@ -122,19 +122,19 @@ public class IdeaControllerTest extends AbstractApiTest {
 		
 		when(userSessionRepository.findByToken(anyString()))
 			.thenReturn(userSession);
-		when(ideaBean.findByUsuario(anyString()))
+		when(ideaBean.findByUsuario(anyString(),anyObject()))
 			.thenReturn(null);
 		mockMvc.perform(get(FIND_BY_USUARIO+"username")
 				.header("Authorization", getToken()))
 			.andExpect(status().isInternalServerError());
 		
-		when(ideaBean.findByUsuario(anyString()))
+		when(ideaBean.findByUsuario(anyString(),anyObject()))
 			.thenReturn(new ArrayList<>());
 		mockMvc.perform(get(FIND_BY_USUARIO+"username")
 				.header("Authorization", getToken()))
 			.andExpect(status().isNoContent());
 		
-		when(ideaBean.findByUsuario(anyString()))
+		when(ideaBean.findByUsuario(anyString(),anyObject()))
 			.thenReturn(Arrays.asList(idea));
 		mockMvc.perform(get(FIND_BY_USUARIO+"username")
 				.header("Authorization", getToken()))
