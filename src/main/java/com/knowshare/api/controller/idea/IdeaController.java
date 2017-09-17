@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knowshare.dto.idea.Comentario;
@@ -62,12 +64,16 @@ public class IdeaController {
 	
 	@RequestMapping(value = "/findByUsuario/{usernameObj:.+}",method=RequestMethod.GET)
 	public ResponseEntity<Object> findByUsuario(HttpServletRequest request,
-			@PathVariable String usernameObj){
-		List<IdeaDTO> ret = ideaBean.findByUsuario(request.getAttribute(USERNAME).toString(),usernameObj);
-		if(null != ret && !ret.isEmpty()){
+			@PathVariable String usernameObj,
+			@RequestParam(defaultValue="0") Integer page,
+			@RequestParam(required=true) long timestamp){
+		Page<IdeaDTO> ret = ideaBean
+				.findByUsuario(request.getAttribute(USERNAME).toString(),usernameObj,
+						page,timestamp);
+		if(null != ret && ret.hasContent()){
 			return ResponseEntity.status(HttpStatus.OK).body(ret);
 		}
-		if(null != ret && ret.isEmpty()){
+		if(null != ret && !ret.hasContent()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
@@ -179,29 +185,16 @@ public class IdeaController {
 	 * @return
 	 */
 	@RequestMapping(value="/findRed" ,method = RequestMethod.GET)
-	public ResponseEntity<Object> findRed(HttpServletRequest request){
+	public ResponseEntity<Object> findRed(
+			HttpServletRequest request,
+			@RequestParam(defaultValue="0") Integer page){
 		final String username = request.getAttribute(USERNAME).toString();
-		List<IdeaDTO> ideas = ideaBusq.findRed(username);
-		if(ideas == null || ideas.isEmpty()){
+		Page<IdeaDTO> ideas = ideaBusq.findRed(username,page);
+		if(ideas == null || !ideas.hasContent()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(ideas);
 	}
-	
-	/**
-	 * Debe ser renombrado el endpoint
-	 * @param request
-	 * @return
-	 */
-//	@RequestMapping(value="/findByTags" ,method = RequestMethod.POST)
-//	public ResponseEntity<Object> findByTags(HttpServletRequest request,
-//			@RequestBody List<Tag> tags){
-//		List<IdeaDTO> ideas = ideaBusq.findByTags(tags);
-//		if(ideas == null || ideas.isEmpty()){
-//			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-//		}
-//		return ResponseEntity.status(HttpStatus.OK).body(ideas);
-//	}
 	
 	/**
 	 * Debe ser renombrado el endpoint
