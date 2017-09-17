@@ -53,6 +53,8 @@ public class RulesController {
 	@Autowired
 	private BusquedaIdeaFacade ideaBusq;
 	
+	private static final String USERNAME = "username";
+	
 	/**
 	 * Obtiene las recomendaciones para el usuario actual.
 	 * @param token para validar la autenticidad del cliente.
