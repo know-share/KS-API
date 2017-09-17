@@ -40,9 +40,6 @@ public class IdeaController {
 	@Autowired
 	private IdeaFacade ideaBean;
 	
-	@Autowired
-	private BusquedaIdeaFacade ideaBusq;
-	
 	private static final String USERNAME = "username";
 	
 	@RequestMapping(value="/crear" ,method = RequestMethod.POST)
@@ -203,18 +200,5 @@ public class IdeaController {
 //		return ResponseEntity.status(HttpStatus.OK).body(ideas);
 //	}
 	
-	/**
-	 * Debe ser renombrado el endpoint
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value="/find/{criterio}" ,method = RequestMethod.POST)
-	public ResponseEntity<Object> findByTags(HttpServletRequest request,
-			@RequestBody List<Tag> tags,@PathVariable String criterio){
-		List<IdeaDTO> ideas = ideaBusq.findIdeas(tags,criterio,request.getAttribute(USERNAME).toString());
-		if(ideas == null || ideas.isEmpty()){
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(ideas);
-	}
+	
 }
