@@ -137,11 +137,11 @@ public class RulesController {
 	}
 	
 	/**
-	 * Debe ser renombrado el endpoint
+	 * Busca ideas
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="/find/{criterio}" ,method = RequestMethod.POST)
+	@RequestMapping(value="/buscarIdea/{criterio}" ,method = RequestMethod.POST)
 	public ResponseEntity<Object> findByTags(HttpServletRequest request,
 			@RequestBody List<Tag> tags,@PathVariable String criterio){
 		List<IdeaDTO> ideas = ideaBusq.findIdeas(tags,criterio,request.getAttribute(USERNAME).toString());
@@ -156,7 +156,7 @@ public class RulesController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value="/findRed" ,method = RequestMethod.GET)
+	@RequestMapping(value="/findIdeasRed" ,method = RequestMethod.GET)
 	public ResponseEntity<Object> findRed(
 			HttpServletRequest request,
 			@RequestParam(defaultValue="0") Integer page){

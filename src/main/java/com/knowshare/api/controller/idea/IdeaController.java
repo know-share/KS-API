@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.knowshare.dto.idea.Comentario;
 import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.enterprise.bean.idea.IdeaFacade;
-import com.knowshare.enterprise.bean.rules.busqueda.BusquedaIdeaFacade;
 import com.knowshare.entities.idea.OperacionIdea;
 import com.knowshare.enums.TipoOperacionEnum;
 
@@ -40,9 +39,6 @@ public class IdeaController {
 	
 	@Autowired
 	private IdeaFacade ideaBean;
-	
-	@Autowired
-	private BusquedaIdeaFacade ideaBusq;
 	
 	private static final String USERNAME = "username";
 	
@@ -176,24 +172,5 @@ public class IdeaController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-	}
-	
-	
-	
-	/**
-	 * Debe ser renombrado el endpoint
-	 * @param request
-	 * @return
-	 */
-//	@RequestMapping(value="/findByTags" ,method = RequestMethod.POST)
-//	public ResponseEntity<Object> findByTags(HttpServletRequest request,
-//			@RequestBody List<Tag> tags){
-//		List<IdeaDTO> ideas = ideaBusq.findByTags(tags);
-//		if(ideas == null || ideas.isEmpty()){
-//			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-//		}
-//		return ResponseEntity.status(HttpStatus.OK).body(ideas);
-//	}
-	
-	
+	}	
 }
