@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -145,6 +146,23 @@ public class RulesController {
 			@RequestBody List<Tag> tags,@PathVariable String criterio){
 		List<IdeaDTO> ideas = ideaBusq.findIdeas(tags,criterio,request.getAttribute(USERNAME).toString());
 		if(ideas == null || ideas.isEmpty()){
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(ideas);
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="/findRed" ,method = RequestMethod.GET)
+	public ResponseEntity<Object> findRed(
+			HttpServletRequest request,
+			@RequestParam(defaultValue="0") Integer page){
+		final String username = request.getAttribute(USERNAME).toString();
+		Page<IdeaDTO> ideas = ideaBusq.findRed(username,page);
+		if(ideas == null || !ideas.hasContent()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(ideas);

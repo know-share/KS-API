@@ -178,22 +178,7 @@ public class IdeaController {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
 	
-	/**
-	 * 
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value="/findRed" ,method = RequestMethod.GET)
-	public ResponseEntity<Object> findRed(
-			HttpServletRequest request,
-			@RequestParam(defaultValue="0") Integer page){
-		final String username = request.getAttribute(USERNAME).toString();
-		Page<IdeaDTO> ideas = ideaBusq.findRed(username,page);
-		if(ideas == null || !ideas.hasContent()){
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(ideas);
-	}
+	
 	
 	/**
 	 * Debe ser renombrado el endpoint
