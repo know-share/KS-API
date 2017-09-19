@@ -66,7 +66,7 @@ public class RulesController {
 	public ResponseEntity<Object> getRecomendaciones(
 			HttpServletRequest request){
 		if(rulesAdminBean.isRulesOn()){
-			final String username = request.getAttribute("username").toString();
+			final String username = request.getAttribute(USERNAME).toString();
 			final List<RecomendacionDTO> recomendaciones = (List<RecomendacionDTO>)recomendacionesBean
 					.setDeRecomendaciones(usuarioBean.getUsuario(username));
 			if(recomendaciones == null || recomendaciones.isEmpty())
@@ -89,7 +89,7 @@ public class RulesController {
 			HttpServletRequest request,
 			@RequestParam(defaultValue="NOMBRE") String filtro,
 			@RequestParam String param){
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		if(null == param || param.isEmpty())
 			return ResponseEntity.badRequest().body(null);
 		final List<RecomendacionDTO> busqueda = busquedaBean

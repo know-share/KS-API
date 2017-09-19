@@ -53,10 +53,9 @@ public class AuthController {
 	 * se manda solicitud sin credenciales se retorna HttpStatus.BAD_REQUEST.
 	 * Si fue correcta la operación se retorna el token generado con estado 
 	 * HttpStatus.OK
-	 * @throws Exception
 	 */
 	@RequestMapping(value="/login", method=RequestMethod.POST)
-	public ResponseEntity<Object> login(@RequestBody AuthDTO dto) throws Exception{
+	public ResponseEntity<Object> login(@RequestBody AuthDTO dto){
 		logger.debug(":::: Start method login() in authController ::::");
 		if(dto != null && ( dto.getUsername() != null && dto.getPassword()!=null )){
 			Usuario usuario = usuarioBean.login(dto.getUsername(), dto.getPassword()); 
