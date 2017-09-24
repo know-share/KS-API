@@ -285,7 +285,7 @@ public class UsuarioController {
 			return ResponseEntity.badRequest().body(null);
 		if(this.usuarioBean.uploadImage(username, file))
 			return ResponseEntity.ok(null);
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 	
 	@RequestMapping(value="/image/{username:.+}", method=RequestMethod.GET)

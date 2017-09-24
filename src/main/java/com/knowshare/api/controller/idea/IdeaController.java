@@ -9,6 +9,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -16,16 +17,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.knowshare.dto.idea.Comentario;
 import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.enterprise.bean.idea.IdeaFacade;
 import com.knowshare.entities.idea.OperacionIdea;
-import com.knowshare.entities.idea.Tag;
 import com.knowshare.enums.TipoOperacionEnum;
 
 /**
+ * Endpoints para operaciones con objeto de tipo
+ * {@link Idea}
  * @author Pablo Gaitan
  *
  */
@@ -56,12 +59,16 @@ public class IdeaController {
 	
 	@RequestMapping(value = "/findByUsuario/{usernameObj:.+}",method=RequestMethod.GET)
 	public ResponseEntity<Object> findByUsuario(HttpServletRequest request,
-			@PathVariable String usernameObj){
-		List<IdeaDTO> ret = ideaBean.findByUsuario(usernameObj);
-		if(null != ret && !ret.isEmpty()){
+			@PathVariable String usernameObj,
+			@RequestParam(defaultValue="0") Integer page,
+			@RequestParam(required=true) long timestamp){
+		Page<IdeaDTO> ret = ideaBean
+				.findByUsuario(request.getAttribute(USERNAME).toString(),usernameObj,
+						page,timestamp);
+		if(null != ret && ret.hasContent()){
 			return ResponseEntity.status(HttpStatus.OK).body(ret);
 		}
-		if(null != ret && ret.isEmpty()){
+		if(null != ret && !ret.hasContent()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
@@ -69,12 +76,14 @@ public class IdeaController {
 	
 	@RequestMapping(value = "/findByUsuarioPro/{usernameObj:.+}",method=RequestMethod.GET)
 	public ResponseEntity<Object> findByUsuarioPro(
-			@PathVariable String usernameObj){
-		List<IdeaDTO> ret = ideaBean.findByUsuarioProyecto(usernameObj);
-		if(ret !=null && !ret.isEmpty()){
+			@PathVariable String usernameObj,
+			@RequestParam(defaultValue="0") Integer page,
+			@RequestParam(required = true) long timestamp){
+		Page<IdeaDTO> ret = ideaBean.findByUsuarioProyecto(usernameObj,page,timestamp);
+		if(ret !=null && ret.hasContent()){
 			return ResponseEntity.status(HttpStatus.OK).body(ret);
 		}
-		if(ret !=null && ret.isEmpty()){
+		if(ret !=null && !ret.hasContent()){
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);	
@@ -165,35 +174,5 @@ public class IdeaController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 		}
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-	}
-	
-	/**
-	 * 
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value="/findRed" ,method = RequestMethod.GET)
-	public ResponseEntity<Object> findRed(HttpServletRequest request){
-		final String username = request.getAttribute(USERNAME).toString();
-		List<IdeaDTO> ideas = ideaBean.findRed(username);
-		if(ideas == null || ideas.isEmpty()){
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(ideas);
-	}
-	
-	/**
-	 * Debe ser renombrado el endpoint
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value="/findByTags" ,method = RequestMethod.POST)
-	public ResponseEntity<Object> findByTags(HttpServletRequest request,
-			@RequestBody List<Tag> tags){
-		List<IdeaDTO> ideas = ideaBean.findByTags(tags);
-		if(ideas == null || ideas.isEmpty()){
-			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
-		}
-		return ResponseEntity.status(HttpStatus.OK).body(ideas);
-	}
+	}	
 }

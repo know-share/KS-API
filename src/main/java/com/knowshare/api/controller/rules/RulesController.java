@@ -8,19 +8,25 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.dto.rules.RecomendacionDTO;
+import com.knowshare.enterprise.bean.rules.busqueda.BusquedaIdeaFacade;
 import com.knowshare.enterprise.bean.rules.busqueda.BusquedaUsuarioFacade;
 import com.knowshare.enterprise.bean.rules.config.RulesAdminFacade;
 import com.knowshare.enterprise.bean.rules.usuarios.RecomendacionConexionFacade;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
+import com.knowshare.entities.idea.Tag;
 
 /**
  * Controlador para reglas de negocio dentro de la aplicación de
@@ -45,6 +51,11 @@ public class RulesController {
 	@Autowired
 	private UsuarioFacade usuarioBean;
 	
+	@Autowired
+	private BusquedaIdeaFacade ideaBusq;
+	
+	private static final String USERNAME = "username";
+	
 	/**
 	 * Obtiene las recomendaciones para el usuario actual.
 	 * @param token para validar la autenticidad del cliente.
@@ -55,7 +66,7 @@ public class RulesController {
 	public ResponseEntity<Object> getRecomendaciones(
 			HttpServletRequest request){
 		if(rulesAdminBean.isRulesOn()){
-			final String username = request.getAttribute("username").toString();
+			final String username = request.getAttribute(USERNAME).toString();
 			final List<RecomendacionDTO> recomendaciones = (List<RecomendacionDTO>)recomendacionesBean
 					.setDeRecomendaciones(usuarioBean.getUsuario(username));
 			if(recomendaciones == null || recomendaciones.isEmpty())
@@ -78,7 +89,7 @@ public class RulesController {
 			HttpServletRequest request,
 			@RequestParam(defaultValue="NOMBRE") String filtro,
 			@RequestParam String param){
-		final String username = request.getAttribute("username").toString();
+		final String username = request.getAttribute(USERNAME).toString();
 		if(null == param || param.isEmpty())
 			return ResponseEntity.badRequest().body(null);
 		final List<RecomendacionDTO> busqueda = busquedaBean
@@ -123,5 +134,37 @@ public class RulesController {
 	@RequestMapping(value="/rulesPreferences", method=RequestMethod.GET)
 	public ResponseEntity<Object> getRulesPreferences(){
 		return ResponseEntity.status(HttpStatus.OK).body(rulesAdminBean.isRulesOn());
+	}
+	
+	/**
+	 * Busca ideas
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="/buscarIdea/{criterio}" ,method = RequestMethod.POST)
+	public ResponseEntity<Object> findByTags(HttpServletRequest request,
+			@RequestBody List<Tag> tags,@PathVariable String criterio){
+		List<IdeaDTO> ideas = ideaBusq.findIdeas(tags,criterio,request.getAttribute(USERNAME).toString());
+		if(ideas == null || ideas.isEmpty()){
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(ideas);
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value="/findIdeasRed" ,method = RequestMethod.GET)
+	public ResponseEntity<Object> findRed(
+			HttpServletRequest request,
+			@RequestParam(defaultValue="0") Integer page){
+		final String username = request.getAttribute(USERNAME).toString();
+		Page<IdeaDTO> ideas = ideaBusq.findRed(username,page);
+		if(ideas == null || !ideas.hasContent()){
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+		}
+		return ResponseEntity.status(HttpStatus.OK).body(ideas);
 	}
 }

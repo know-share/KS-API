@@ -17,18 +17,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
 
+import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.dto.perfilusuario.UsuarioDTO;
 import com.knowshare.dto.rules.RecomendacionDTO;
+import com.knowshare.enterprise.bean.rules.busqueda.BusquedaIdeaFacade;
 import com.knowshare.enterprise.bean.rules.busqueda.BusquedaUsuarioFacade;
 import com.knowshare.enterprise.bean.rules.config.RulesAdminFacade;
 import com.knowshare.enterprise.bean.rules.usuarios.RecomendacionConexionFacade;
 import com.knowshare.enterprise.bean.usuario.UsuarioFacade;
+import com.knowshare.enums.TipoIdeaEnum;
 import com.knowshare.enums.TipoUsuariosEnum;
 import com.knowshare.fact.rules.TipoConexionEnum;
 import com.knowshare.test.api.general.AbstractApiTest;
@@ -51,12 +56,17 @@ public class RulesControllerTest extends AbstractApiTest{
 	@MockBean
 	private RulesAdminFacade rulesAdminBean;
 	
+	@MockBean
+	private BusquedaIdeaFacade busquedaIdea;
+	
 	private static final String RECOMENDACION_CONEXIONES = "/api/rules/recomendacionConexiones";
 	private static final String BUSCAR_USUARIO = "/api/rules/buscarUsuario";
 	private static final String ACTUALIZAR = "/api/rules/update";
 	private static final String PREFERENCIAS = "/api/rules/rulesPreferences";
+	private static final String FIND_RED = "/api/rules/findIdeasRed";
 	
 	private List<?> recomendaciones;
+	private IdeaDTO idea;
 	
 	@Before
 	public void setup(){
@@ -74,6 +84,14 @@ public class RulesControllerTest extends AbstractApiTest{
 				.setTipoUsuario(TipoUsuariosEnum.EGRESADO)
 				.setUsername("username mock 2"));
 		recomendaciones = recomendacionesCopy;
+		
+		idea = new IdeaDTO()
+				.setId(new String("id"))
+				.setAlcance("Alcance")
+				.setContenido("Idea nueva")
+				.setNumeroEstudiantes(3)
+				.setUsuario("username user 1")
+				.setTipo(TipoIdeaEnum.NU);
 	}
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -247,5 +265,49 @@ public class RulesControllerTest extends AbstractApiTest{
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(contentType))
 			.andExpect(jsonPath("$",is(true)));
+	}
+	
+	@Test
+	public void findRedTest() throws Exception {
+		mockMvc.perform(get(FIND_RED))
+			.andExpect(status().isUnauthorized());
+		
+		mockMvc.perform(get(FIND_RED)
+				.header("Authorization", "bad token"))
+			.andExpect(status().isUnauthorized());
+		
+		when(userSessionRepository.findByToken(anyString()))
+			.thenReturn(userSession);
+		when(busquedaIdea.findRed("username user 1",0))
+			.thenReturn(null);
+		mockMvc.perform(get(FIND_RED)
+				.header("Authorization", getToken()))
+			.andExpect(status().isNoContent());
+		
+		when(busquedaIdea.findRed("username user 1",0))
+			.thenReturn(new PageImpl<>(new ArrayList<>()));
+		mockMvc.perform(get(FIND_RED)
+				.header("Authorization", getToken()))
+			.andExpect(status().isNoContent());
+		
+		when(busquedaIdea.findRed("username user 1",0))
+			.thenReturn(new PageImpl<>(Arrays.asList(idea)));
+		mockMvc.perform(get(FIND_RED)
+				.header("Authorization", getToken()))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType(contentType))
+			.andExpect(jsonPath("$.totalElements", is(1)))
+			.andExpect(jsonPath("$.last", is(true)))
+			.andExpect(jsonPath("$.first", is(true)))
+			.andExpect(jsonPath("$.totalPages", is(1)))
+			.andExpect(jsonPath("$.number", is(0)))
+			.andExpect(jsonPath("$.numberOfElements", is(1)))
+			.andExpect(jsonPath("$.content", hasSize(1)))
+			.andExpect(jsonPath("$.content[0].id").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].tipo").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].alcance").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].contenido").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].usuario").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].numeroEstudiantes",is(3)));
 	}
 }

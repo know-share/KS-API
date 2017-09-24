@@ -564,7 +564,7 @@ public class UsuarioControllerTest extends AbstractApiTest{
 		mockMvc.perform(fileUpload(UPLOAD)
 				.file(image)
 				.header("Authorization", getToken()))
-			.andExpect(status().isBadRequest());
+			.andExpect(status().isInternalServerError());
 		
 		when(usuarioBean.uploadImage(anyString(), anyObject()))
 			.thenReturn(true);

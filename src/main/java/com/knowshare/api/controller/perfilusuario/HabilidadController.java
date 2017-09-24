@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,8 +20,8 @@ import com.knowshare.dto.perfilusuario.HabilidadDTO;
 import com.knowshare.enterprise.bean.habilidad.HabilidadFacade;
 import com.knowshare.entities.perfilusuario.Habilidad;
 
-
 /**
+ * Endpoints para operaciones con objeto de tipo {@link Habilidad}
  * @author Miguel Montañez
  *
  */
@@ -61,17 +60,6 @@ public class HabilidadController {
 					.body(null);
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(habilidades);
-	}
-	
-	/**
-	 * Example of pagination
-	 * this method is not complete, therefore is not tested
-	 * @return
-	 */
-	@RequestMapping(value="/findAll", method=RequestMethod.GET)
-	public Page<Habilidad> findAll(
-			@RequestParam(defaultValue="0") Integer page){
-		return habilidadBean.getAll(page);
 	}
 	
 	@RequestMapping(value="/getAll", method=RequestMethod.GET, produces="application/json")

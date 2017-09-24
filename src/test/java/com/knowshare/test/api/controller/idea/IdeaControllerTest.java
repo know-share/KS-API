@@ -6,6 +6,8 @@ package com.knowshare.test.api.controller.idea;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
@@ -22,16 +24,18 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
 
 import com.knowshare.dto.idea.Comentario;
 import com.knowshare.dto.idea.IdeaDTO;
 import com.knowshare.enterprise.bean.idea.IdeaFacade;
+import com.knowshare.enterprise.bean.rules.busqueda.BusquedaIdeaFacade;
 import com.knowshare.entities.idea.OperacionIdea;
 import com.knowshare.enums.TipoIdeaEnum;
 import com.knowshare.test.api.general.AbstractApiTest;
 
 /**
- * @author miguel
+ * @author Miguel Montañez
  *
  */
 public class IdeaControllerTest extends AbstractApiTest {
@@ -39,12 +43,14 @@ public class IdeaControllerTest extends AbstractApiTest {
 	@MockBean
 	private IdeaFacade ideaBean;
 	
+	@MockBean
+	private BusquedaIdeaFacade ideaBusq;
+	
 	private IdeaDTO idea;
 	
 	private static final String CREAR = "/api/idea/crear";
 	private static final String FIND_BY_USUARIO = "/api/idea/findByUsuario/";
 	private static final String FIND_BY_USUARIO_PROY = "/api/idea/findByUsuarioPro/";
-	private static final String FIND_RED = "/api/idea/findRed";
 	private static final String COMMENT = "/api/idea/comentar";
 	private static final String LIGHT = "/api/idea/light";
 	private static final String FIND_BY_ID = "/api/idea/findById/";
@@ -118,31 +124,37 @@ public class IdeaControllerTest extends AbstractApiTest {
 		
 		when(userSessionRepository.findByToken(anyString()))
 			.thenReturn(userSession);
-		when(ideaBean.findByUsuario(anyString()))
+		when(ideaBean.findByUsuario(anyString(),anyString(),anyInt(),anyLong()))
 			.thenReturn(null);
-		mockMvc.perform(get(FIND_BY_USUARIO+"username")
+		mockMvc.perform(get(FIND_BY_USUARIO+"username?timestamp=1505617530706")
 				.header("Authorization", getToken()))
 			.andExpect(status().isInternalServerError());
 		
-		when(ideaBean.findByUsuario(anyString()))
-			.thenReturn(new ArrayList<>());
-		mockMvc.perform(get(FIND_BY_USUARIO+"username")
+		when(ideaBean.findByUsuario(anyString(),anyString(),anyInt(),anyLong()))
+			.thenReturn(new PageImpl<>(new ArrayList<>()));
+		mockMvc.perform(get(FIND_BY_USUARIO+"username?timestamp=1505617530706")
 				.header("Authorization", getToken()))
 			.andExpect(status().isNoContent());
 		
-		when(ideaBean.findByUsuario(anyString()))
-			.thenReturn(Arrays.asList(idea));
-		mockMvc.perform(get(FIND_BY_USUARIO+"username")
+		when(ideaBean.findByUsuario(anyString(),anyString(),anyInt(),anyLong()))
+			.thenReturn(new PageImpl<>(Arrays.asList(idea)));
+		mockMvc.perform(get(FIND_BY_USUARIO+"username?timestamp=1505617530706")
 				.header("Authorization", getToken()))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(contentType))
-			.andExpect(jsonPath("$", hasSize(1)))
-			.andExpect(jsonPath("$[0].id").isNotEmpty())
-			.andExpect(jsonPath("$[0].tipo").isNotEmpty())
-			.andExpect(jsonPath("$[0].alcance").isNotEmpty())
-			.andExpect(jsonPath("$[0].contenido").isNotEmpty())
-			.andExpect(jsonPath("$[0].usuario").isNotEmpty())
-			.andExpect(jsonPath("$[0].numeroEstudiantes",is(3)));
+			.andExpect(jsonPath("$.totalElements", is(1)))
+			.andExpect(jsonPath("$.last", is(true)))
+			.andExpect(jsonPath("$.first", is(true)))
+			.andExpect(jsonPath("$.totalPages", is(1)))
+			.andExpect(jsonPath("$.number", is(0)))
+			.andExpect(jsonPath("$.numberOfElements", is(1)))
+			.andExpect(jsonPath("$.content", hasSize(1)))
+			.andExpect(jsonPath("$.content[0].id").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].tipo").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].alcance").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].contenido").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].usuario").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].numeroEstudiantes",is(3)));
 	}
 	
 	@Test
@@ -150,78 +162,46 @@ public class IdeaControllerTest extends AbstractApiTest {
 		mockMvc.perform(get(FIND_BY_USUARIO_PROY))
 			.andExpect(status().isNotFound());
 		
-		mockMvc.perform(get(FIND_BY_USUARIO_PROY+"username"))
+		mockMvc.perform(get(FIND_BY_USUARIO_PROY+"username?timestamp=1505617530706"))
 			.andExpect(status().isUnauthorized());
 		
-		mockMvc.perform(get(FIND_BY_USUARIO_PROY+"username")
+		mockMvc.perform(get(FIND_BY_USUARIO_PROY+"username?timestamp=1505617530706")
 				.header("Authorization", "bad token"))
 			.andExpect(status().isUnauthorized());
 		
 		when(userSessionRepository.findByToken(anyString()))
 			.thenReturn(userSession);
-		when(ideaBean.findByUsuarioProyecto(anyString()))
+		when(ideaBean.findByUsuarioProyecto(anyString(),anyInt(),anyLong()))
 			.thenReturn(null);
-		mockMvc.perform(get(FIND_BY_USUARIO_PROY+"username")
+		mockMvc.perform(get(FIND_BY_USUARIO_PROY+"username?timestamp=1505617530706")
 				.header("Authorization", getToken()))
 			.andExpect(status().isInternalServerError());
 		
-		when(ideaBean.findByUsuarioProyecto(anyString()))
-			.thenReturn(new ArrayList<>());
-		mockMvc.perform(get(FIND_BY_USUARIO_PROY+"username")
+		when(ideaBean.findByUsuarioProyecto(anyString(),anyInt(),anyLong()))
+			.thenReturn(new PageImpl<>(new ArrayList<>()));
+		mockMvc.perform(get(FIND_BY_USUARIO_PROY+"username?timestamp=1505617530706")
 				.header("Authorization", getToken()))
 			.andExpect(status().isNoContent());
 		
-		when(ideaBean.findByUsuarioProyecto(anyString()))
-			.thenReturn(Arrays.asList(idea));
-		mockMvc.perform(get(FIND_BY_USUARIO_PROY+"username")
+		when(ideaBean.findByUsuarioProyecto(anyString(),anyInt(),anyLong()))
+			.thenReturn(new PageImpl<>(Arrays.asList(idea)));
+		mockMvc.perform(get(FIND_BY_USUARIO_PROY+"username?timestamp=1505617530706")
 				.header("Authorization", getToken()))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType(contentType))
-			.andExpect(jsonPath("$", hasSize(1)))
-			.andExpect(jsonPath("$[0].id").isNotEmpty())
-			.andExpect(jsonPath("$[0].tipo").isNotEmpty())
-			.andExpect(jsonPath("$[0].alcance").isNotEmpty())
-			.andExpect(jsonPath("$[0].contenido").isNotEmpty())
-			.andExpect(jsonPath("$[0].usuario").isNotEmpty())
-			.andExpect(jsonPath("$[0].numeroEstudiantes",is(3)));
-	}
-	
-	@Test
-	public void findRedTest() throws Exception {
-		mockMvc.perform(get(FIND_RED))
-			.andExpect(status().isUnauthorized());
-		
-		mockMvc.perform(get(FIND_RED)
-				.header("Authorization", "bad token"))
-			.andExpect(status().isUnauthorized());
-		
-		when(userSessionRepository.findByToken(anyString()))
-			.thenReturn(userSession);
-		when(ideaBean.findRed("username user 1"))
-			.thenReturn(null);
-		mockMvc.perform(get(FIND_RED)
-				.header("Authorization", getToken()))
-			.andExpect(status().isNoContent());
-		
-		when(ideaBean.findRed("username user 1"))
-			.thenReturn(new ArrayList<>());
-		mockMvc.perform(get(FIND_RED)
-				.header("Authorization", getToken()))
-			.andExpect(status().isNoContent());
-		
-		when(ideaBean.findRed("username user 1"))
-			.thenReturn(Arrays.asList(idea));
-		mockMvc.perform(get(FIND_RED)
-				.header("Authorization", getToken()))
-			.andExpect(status().isOk())
-			.andExpect(content().contentType(contentType))
-			.andExpect(jsonPath("$", hasSize(1)))
-			.andExpect(jsonPath("$[0].id").isNotEmpty())
-			.andExpect(jsonPath("$[0].tipo").isNotEmpty())
-			.andExpect(jsonPath("$[0].alcance").isNotEmpty())
-			.andExpect(jsonPath("$[0].contenido").isNotEmpty())
-			.andExpect(jsonPath("$[0].usuario").isNotEmpty())
-			.andExpect(jsonPath("$[0].numeroEstudiantes",is(3)));
+			.andExpect(jsonPath("$.totalElements", is(1)))
+			.andExpect(jsonPath("$.last", is(true)))
+			.andExpect(jsonPath("$.first", is(true)))
+			.andExpect(jsonPath("$.totalPages", is(1)))
+			.andExpect(jsonPath("$.number", is(0)))
+			.andExpect(jsonPath("$.numberOfElements", is(1)))
+			.andExpect(jsonPath("$.content", hasSize(1)))
+			.andExpect(jsonPath("$.content[0].id").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].tipo").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].alcance").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].contenido").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].usuario").isNotEmpty())
+			.andExpect(jsonPath("$.content[0].numeroEstudiantes",is(3)));
 	}
 	
 	@Test

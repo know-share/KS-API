@@ -26,10 +26,11 @@ import com.knowshare.entities.app.UserSession;
 import com.knowshare.entities.perfilusuario.Usuario;
 
 /**
+ * Endpoints para la autenticación y cierre de sesión
+ * dentro de la aplicación
  * @author Miguel Montañez
  *
  */
-
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/auth")
@@ -43,8 +44,18 @@ public class AuthController {
 	@Autowired
 	private UserSessionRepository userSessionRepository;
 	
+	/**
+	 * Permite el inicio de sesión dentro de la aplicación
+	 * @param dto contiene las credenciales ingresadas por el usuario
+	 * @return Si al generar el token hubo algo mal se retorna
+	 * HttpStatus.INTERNAL_SERVER_ERROR. Si las credenciales fueron 
+	 * incorrectas se retorna HttpStatus.UNAUTHORIZED. Si
+	 * se manda solicitud sin credenciales se retorna HttpStatus.BAD_REQUEST.
+	 * Si fue correcta la operación se retorna el token generado con estado 
+	 * HttpStatus.OK
+	 */
 	@RequestMapping(value="/login", method=RequestMethod.POST)
-	public ResponseEntity<Object> login(@RequestBody AuthDTO dto) throws Exception{
+	public ResponseEntity<Object> login(@RequestBody AuthDTO dto){
 		logger.debug(":::: Start method login() in authController ::::");
 		if(dto != null && ( dto.getUsername() != null && dto.getPassword()!=null )){
 			Usuario usuario = usuarioBean.login(dto.getUsername(), dto.getPassword()); 
@@ -65,6 +76,13 @@ public class AuthController {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
 	
+	/**
+	 * Permite el cierre de sesión en la aplicación
+	 * @param token para saber cuál usuario está haciendo 
+	 * cierre de sesión
+	 * @return HttpStatus.OK si se pudo cerrar sesión en el sistema,
+	 * de lo contrario HttpStatus.NOT_MODIFIED.
+	 */
 	@RequestMapping(value="logout", method=RequestMethod.PUT)
 	public ResponseEntity<Object> logout(
 			@RequestHeader("Authorization") String token){

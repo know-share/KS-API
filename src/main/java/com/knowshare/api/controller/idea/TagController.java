@@ -17,7 +17,8 @@ import com.knowshare.enterprise.bean.tag.TagFacade;
 import com.knowshare.entities.idea.Tag;
 
 /**
- * 
+ * Endpoints para operaciones con objeto de tipo
+ * {@link Tag}
  * @author Miguel Montañez
  *
  */

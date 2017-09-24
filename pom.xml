@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.knowshare.api</groupId>
 	<artifactId>KS-API</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -15,7 +15,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<java.version>1.8</java.version>
-		<knowshare.version>1.0.0</knowshare.version>
+		<knowshare.version>1.0.1</knowshare.version>
 	</properties>
 
 	<dependencies>

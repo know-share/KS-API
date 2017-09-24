@@ -3,7 +3,6 @@
  */
 package com.knowshare.api.controller.admin;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.knowshare.enterprise.bean.dashboards.DashboardsFacade;
 
 /**
+ * Endpoints para operaciones realizadas por el
+ * administrador del sistema
  * @author Felipe Bautista
  *
  */
