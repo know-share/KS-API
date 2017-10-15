@@ -3,7 +3,6 @@
  */
 package com.knowshare.api.controller.perfilusuario;
 
-
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +32,7 @@ import com.knowshare.entities.perfilusuario.Gusto;
 import com.knowshare.entities.perfilusuario.Usuario;
 import com.knowshare.enums.PreferenciaIdeaEnum;
 import com.knowshare.enums.TipoImagenEnum;
+import com.knowshare.enums.TipoUsuariosEnum;
 
 /**
  * Endpoints para operaciones con objeto de tipo {@link Usuario}
@@ -191,10 +191,11 @@ public class UsuarioController {
 	}
 	
 	/**
-	 * 
-	 * @param token
+	 * Obtiene el usuario especificado en la solicitud.
 	 * @param username
-	 * @return
+	 * @return {@link HttpStatus.BAD_REQUEST} Si no especifica el usuario.
+	 * {@link HttpStatus.NO_CONTENT} Si el usuario no existe.
+	 * {@link HttpStatus.OK} Si el usuario fue encontrado.
 	 */
 	@RequestMapping(value="/get/{username:.+}", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<UsuarioDTO> getUsuario(
@@ -207,6 +208,17 @@ public class UsuarioController {
 		return ResponseEntity.ok(usuario);
 	}
 	
+	/**
+	 * Agrega el trabajo de grado que debe ser enviado
+	 * en la solicitud. 
+	 * @param request
+	 * @param tg
+	 * @return {@link HttpStatus.BAD_REQUEST} Si no envía el trabajo de
+	 * grado en la solicitud. 
+	 * {@link HttpStatus.CREATED} Si pudo realizar la operación correctamente.
+	 * {@link HttpStatus.INTERNAL_SERVER_ERROR} Si hubo un problema agregando
+	 * el trabajo de grado.
+	 */
 	@RequestMapping(value="/addTG", method=RequestMethod.POST,consumes="application/json")
 	public ResponseEntity<Object> addTG(
 			HttpServletRequest request,
@@ -219,6 +231,17 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 	
+	/**
+	 * Agrega la formación académica especificada en la solicitud
+	 * en el usuario que realiza la operación.
+	 * @param request
+	 * @param fa
+	 * @return {@link HttpStatus.BAD_REQUEST} Si no envía la formación
+	 * académica a agregar. 
+	 * {@link HttpStatus.CREATED} Si pudo crearse adecuadamente.
+	 * {@link HttpStatus.INTERNAL_SERVER_ERROR} Si hubo problemas en
+	 * la creación.
+	 */
 	@RequestMapping(value ="/addFormacionAcademica", method=RequestMethod.POST,consumes="application/json")
 	public ResponseEntity<Object> addFormacionAcademica(
 			HttpServletRequest request,
@@ -231,6 +254,16 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 	
+	/**
+	 * Elimina el amigo especificado en el parámetro de la solicitud.
+	 * @param request
+	 * @param username
+	 * @return {@link HttpStatus.BAD_REQUEST} Si no especifica un usuario
+	 * a eliminar.
+	 * {@link HttpStatus.OK} Si pudo eliminar al amigo.
+	 * {@link HttpStatus.INTERNAL_SERVER_ERROR} Si hubo un problema
+	 * eliminando el amigo.
+	 */
 	@RequestMapping(value="/eliminarAmigo/{username:.+}", method =RequestMethod.PUT)
 	public ResponseEntity<Object> eliminarAmigo(
 			HttpServletRequest request,
@@ -243,6 +276,16 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 	
+	/**
+	 * Actualiza la información académica.
+	 * @param request
+	 * @param usuario
+	 * @return {@link HttpStatus.BAD_REQUEST} Si no se manda el usuario con
+	 * la información a actualizar.
+	 * {@link HttpStatus.OK} Si pudo actualizar de forma correcta la información.
+	 * {@link HttpStatus.INTERNAL_SERVER_ERROR} Si hubo problemas en la
+	 * actualización parcial.
+	 */
 	@RequestMapping(value="/actualizarInfoAcademica", method =RequestMethod.PATCH)
 	public ResponseEntity<Object> actualizarInfoAcademica(
 			HttpServletRequest request,
@@ -254,6 +297,16 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 	
+	/**
+	 * Actualiza habilidades o cualidades del usuario.
+	 * @param request
+	 * @param usuario
+	 * @return {@link HttpStatus.BAD_REQUEST} Si no se manda el usuario con
+	 * la información a actualizar.
+	 * {@link HttpStatus.OK} Si pudo actualizar de forma correcta la información.
+	 * {@link HttpStatus.INTERNAL_SERVER_ERROR} Si hubo problemas en la
+	 * actualización parcial.
+	 */
 	@RequestMapping(value="/actualizarHabilidadCualidad", method =RequestMethod.PATCH)
 	public ResponseEntity<Object> actualizarHabilidadCualidad(
 			HttpServletRequest request,
@@ -265,6 +318,16 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 	
+	/**
+	 * Actualiza información básica de un usuario.
+	 * @param request
+	 * @param usuario
+	 * @return {@link HttpStatus.BAD_REQUEST} Si no se manda el usuario con
+	 * la información a actualizar.
+	 * {@link HttpStatus.OK} Si pudo actualizar de forma correcta la información.
+	 * {@link HttpStatus.INTERNAL_SERVER_ERROR} Si hubo problemas en la
+	 * actualización parcial.
+	 */
 	@RequestMapping(value="/actualizarBasis", method =RequestMethod.PATCH)
 	public ResponseEntity<Object> actualizarBasis(
 			HttpServletRequest request,
@@ -276,6 +339,16 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 	
+	/**
+	 * Permite la carga de imágenes al servidor.
+	 * @param file
+	 * @param request
+	 * @return {@link HttpStatus.BAD_REQUEST} Si el archivo no es
+	 * mandado.
+	 * {@link HttpStatus.OK} Si la imagen pudo ser subido.
+	 * {@link HttpStatus.INTERNAL_SERVER_ERROR} Si hubo problemas
+	 * en la carga de la imagen. 
+	 */
 	@RequestMapping(value="/upload", method=RequestMethod.POST)
 	public ResponseEntity<Object> uploadImage(
 			@RequestParam MultipartFile file,
@@ -288,6 +361,14 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 	
+	/**
+	 * Permite obtener la imagen del usuario especificado
+	 * @param username
+	 * @return {@link HttpStatus.OK} Si el usuario posee una imagen
+	 * en el servidor.
+	 * {@link HttpStatus.NOT_FOUND} Si la imagen no fue encontrada
+	 * para el usuario especificado
+	 */
 	@RequestMapping(value="/image/{username:.+}", method=RequestMethod.GET)
 	public ResponseEntity<byte[]> getImage(
 			@PathVariable String username){
@@ -304,6 +385,16 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
 	}
 	
+	/**
+	 * Actualiza la preferencia de idea de un usuario.
+	 * @param request
+	 * @param preferencia
+	 * @return {@link HttpStatus.OK} Si la actualización se realiza
+	 * de forma exitosa.
+	 * {@link HttpStatus.NOT_MODIFIED} Si actualiza a un estado que ya
+	 * tenía.
+	 * {@link HttpStatus.BAD_REQUEST} Si la preferencia no es enviada.
+	 */
 	@RequestMapping(value="preferenciaIdea", method=RequestMethod.PATCH)
 	public ResponseEntity<Object> updatePreferencia(
 			HttpServletRequest request,
@@ -317,6 +408,15 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 	}
 	
+	/**
+	 * Actualiza las insignias que ya han sido vistas por
+	 * el usuario.
+	 * @param request
+	 * @return {@link HttpStatus.OK} Si se pudo realizar la
+	 * actualización de forma correcta.
+	 * {@link HttpStatus.INTERNAL_SERVER_ERROR} Si hubo problemas
+	 * en la actualización.
+	 */
 	@RequestMapping(value="updateInsignias", method=RequestMethod.PUT)
 	public ResponseEntity<Object> updateInsignias(
 			HttpServletRequest request){
@@ -326,6 +426,12 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
 	}
 	
+	/**
+	 * Promueve un {@link TipoUsuariosEnum.ESTUDIANTE} a {@link TipoUsuariosEnum.EGRESADO}
+	 * @param username
+	 * @return {@link HttpStatus.OK} Si la operación se pudo realizar.
+	 * {@link HttpStatus.NOT_MODIFIED} Si el usuario ya es egresado o profesor.
+	 */
 	@RequestMapping(value="promover/{username:.+}", method=RequestMethod.PUT)
 	public ResponseEntity<Object> promote(
 			@PathVariable String username){
@@ -334,6 +440,14 @@ public class UsuarioController {
 		return ResponseEntity.status(HttpStatus.NOT_MODIFIED).body(null);
 	}
 	
+	/**
+	 * Actualiza los gustos de un usuario de tipo {@link TipoUsuariosEnum.ESTUDIANTE}
+	 * @param request
+	 * @param gustos
+	 * @return {@link HttpStatus.OK} Si la actualización se pudo realizar.
+	 * {@link HttpStatus.NOT_MODIFIED} Si no hubieron cambios nuevos.
+	 * {@link HttpStatus.BAD_REQUEST} Si no se mandan gustos en la solicitud.
+	 */
 	@RequestMapping(value ="actualizarGustos", method=RequestMethod.PATCH)
 	public ResponseEntity<Object> actualizarGustos(
 			HttpServletRequest request,

@@ -44,5 +44,4 @@ public class GustoController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(gustos);
 	}
-
 }

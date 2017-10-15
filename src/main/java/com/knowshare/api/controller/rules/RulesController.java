@@ -137,9 +137,10 @@ public class RulesController {
 	}
 	
 	/**
-	 * Busca ideas
+	 * Busca ideas según el criterio ingresado
 	 * @param request
-	 * @return
+	 * @return HttpStatus.NO_CONTENT si la búsqueda no retornó ningún valor.
+	 * HttpStatus.OK si hubieron resultados.
 	 */
 	@RequestMapping(value="/buscarIdea/{criterio}" ,method = RequestMethod.POST)
 	public ResponseEntity<Object> findByTags(HttpServletRequest request,
@@ -152,9 +153,10 @@ public class RulesController {
 	}
 	
 	/**
-	 * 
+	 * Encuentra las ideas de la red de manera paginada.
 	 * @param request
-	 * @return
+	 * @return HttpStatus.NO_CONTENT si no hay ideas en la red. 
+	 * De lo contrario retorna HttpStatus.OK
 	 */
 	@RequestMapping(value="/findIdeasRed" ,method = RequestMethod.GET)
 	public ResponseEntity<Object> findRed(

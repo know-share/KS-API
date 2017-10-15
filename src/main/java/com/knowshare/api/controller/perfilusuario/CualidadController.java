@@ -49,5 +49,4 @@ public class CualidadController {
 		return ResponseEntity.status(HttpStatus.OK)
 				.body(cualidades);
 	}
-
 }

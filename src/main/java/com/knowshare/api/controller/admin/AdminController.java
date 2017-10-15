@@ -31,7 +31,15 @@ public class AdminController{
 	@Autowired
 	private DashboardsFacade dashboardBean;
 	
-	
+	/**
+	 * Obtiene la lista de usuarios por género de la carrera
+	 * especificada.
+	 * @param carrera
+	 * @return {@link HttpStatus.BAD_REQUEST} Si la carrera no es
+	 * especificada.
+	 * {@link HttpStatus.NO_CONTENT} Si hubo problemas en la búsqueda.
+	 * {@link HttpStatus.OK} Si se pudo realizar la búsqueda.
+	 */
 	@RequestMapping(value="/getUsuarios", method=RequestMethod.GET, produces="application/json")
 	public ResponseEntity<List<Integer>> 
 		getEstudiantes( @RequestParam String carrera){
@@ -46,9 +54,14 @@ public class AdminController{
 				.body(usuarios);
 	}
 	
+	/**
+	 * Obtiene el uso de cada uno de los tags
+	 * @return {@link HttpStatus.NO_CONTENT} Si no pudo obtener el uso
+	 * de cada uno de los tags.
+	 * {@link HttpStatus.OK} Si pudo obtener el uso de los tags.
+	 */
 	@RequestMapping(value="/getTags", method=RequestMethod.GET, produces="application/json")
-	public ResponseEntity<Map<String,Integer>> 
-		getTags( ){
+	public ResponseEntity<Map<String,Integer>> getTags( ){
 		Map<String,Integer>map = dashboardBean.usoTags();
 		if(map == null)
 			return ResponseEntity.status(HttpStatus.NO_CONTENT)
