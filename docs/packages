@@ -1,0 +1,10 @@
+com.knowshare.api.controller.academia
+com.knowshare.api.controller.access
+com.knowshare.api.controller.admin
+com.knowshare.api.controller.idea
+com.knowshare.api.controller.ludificacion
+com.knowshare.api.controller.perfilusuario
+com.knowshare.api.controller.rules
+com.knowshare.api.interceptor
+com.knowshare.api
+com.knowshare.api.security
