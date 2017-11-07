@@ -1,5 +1,8 @@
 package com.knowshare.api;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
@@ -18,6 +21,10 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 public class Main {
 	
 	public static void main(String[] args) {
+		RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+		System.out.println("---------------------------------------------------");
+		System.out.println("Running app with next arguments: "+runtimeMxBean.getInputArguments());
+		System.out.println("---------------------------------------------------");
 		SpringApplication.run(Main.class, args);
 	}
 }
