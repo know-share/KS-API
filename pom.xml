@@ -72,7 +72,17 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
-					<jvmArguments>-Xms256m -Xmx1024m</jvmArguments>
+					<jvmArguments>
+						-Xms256m
+						-Xmx1024m
+						-Dcom.sun.management.jmxremote
+                                                -Dcom.sun.management.jmxremote.port=9010
+                                                -Dcom.sun.management.jmxremote.rmi.port=9010
+                                                -Dcom.sun.management.jmxremote.local.only=false
+                                                -Dcom.sun.management.jmxremote.authenticate=false
+                                                -Dcom.sun.management.jmxremote.ssl=false
+                                                -Djava.rmi.server.hostname=''
+					</jvmArguments>
 		        </configuration>
 			</plugin>
 			<plugin>
